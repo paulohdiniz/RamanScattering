@@ -20,7 +20,7 @@ SHGOpt =0;
 pathname = uigetdir('/Users/paulohd/Desktop/PauloDiniz');
 folders=dir(pathname);
 
-folder_range=[14:18];%change this according to file used 
+folder_range=[15:19];%change this according to file used 
 for ii=folder_range
 cd(fullfile(pathname,folders(ii).name))
  data_filename{ii-folder_range(1)+1}=importdata('0000_.ASC');
@@ -216,14 +216,13 @@ end
     
 %     [wn,RamanSpectrum] = my_FT2_no_plot(x_delaySpect(PixelsForFourierSpect),integrated_time_trace(PixelsForFourierSpect)); % wavenumbers are in cm^-1, Raman spectrum is arbitrary units
 %     [wn,HyperspectralRamanImage] = my_FT2_no_plot(x_delay(PixelsForFourier),data_3d(PixelsForFourier,:,:),1); % wavenumbers are in cm^-1, Raman spectrum is arbitrary units    
-    
+   
     [wn,HyperspectralRamanImageComplex] = my_FT2_no_plot_Complex_nfft(x_delay(PixelsForFourier), data_3d(PixelsForFourier,:,:),1,0,1); % wavenumbers are in cm^-1, Raman spectrum is arbitrary units
     wn = wn(1:floor(size(HyperspectralRamanImageComplex,1)/2));
     %     figure; plot(tempwn,abs(sum(sum(HyperspectralRamanImageComplex,2),3)));
     HyperspectralRamanImageComplex(abs(wn)>900,:,:) = 0;
 %     [tempt,fourierFilteredSig] = my_FT2_no_plot_Complex(tempwn,HyperspectralRamanImageComplex,1,1);
    %  figure; plot((real(sum(sum(fourierFilteredSig,2),3))));
-                roi = roipoly(app.Image);  % app.Image is image which is display through button press initally
 
     PosFreqHyperspectralRamanImageComplex = HyperspectralRamanImageComplex(1:floor(size(HyperspectralRamanImageComplex,1)/2),:,:);
     HyperspectralRamanImage = abs(PosFreqHyperspectralRamanImageComplex);

@@ -34,17 +34,33 @@ classdef Sid_Processing
         t_interp
         data_interp
         window_interp=2
-    end
 
+        %FT
+        hyperspectralRamanImageComplex
+        wn
+        ramanSpectrum
+        wns_plot
+        pixels_plot
+
+        %window
+        window2
+        ratio_window
+        tukey_window_param
+        deadtime
+
+
+    end
 
     methods
 
         function Sid_Processing=choose_folders_load_data(Sid_Processing,xp_number)
             cd(Sid_Processing.Data_path) % we go there
             folder_content=dir(Sid_Processing.Data_path); % We look a the folder content
+            folder_content = folder_content(~startsWith({folder_content.name}, ".")); %excludes all starting with "."
+            folder_content = folder_content([folder_content.isdir]); %only folders, not files.
             pp=1;
             i_0=1;
-            names=cellfun(@(x) x(9:145),{folder_content(3:end-2).name},'UniformOutput',false); % we avoid the first two.
+            names=cellfun(@(x) x(9:145),{folder_content(:).name},'UniformOutput',false);  
             for ii=1:length(names)
                 bla=strcmp(names{i_0},names{ii});
                 if bla
@@ -55,8 +71,7 @@ classdef Sid_Processing
                     indice(pp,ii)=ii;
                 end
             end
-            Sid_Processing.folders=folder_content(2+indice(xp_number,indice(xp_number,:)~=0)); % Because we started at 3 before
-
+            Sid_Processing.folders=folder_content(indice(xp_number,indice(xp_number,:)~=0));
             %Load Data and Parameters
 
             for tt=1:length(Sid_Processing.folders)
@@ -73,21 +88,19 @@ classdef Sid_Processing
                 str=erase(A(II(end)+1:end),'psdelay');
 
                 Sid_Processing.delays(tt)=str2double(str);
-                Sid_Processing.N_t =Sid_Processing.parameters_raw(tt).parameters.data(11);
+                Sid_Processing.N_t = Sid_Processing.parameters_raw(tt).parameters.data(11);
                 Sid_Processing.N_x = Sid_Processing.parameters_raw(tt).parameters.data(1)*(1+Sid_Processing.DCopt); % In case there is also the transmission data
                 Sid_Processing.N_y = Sid_Processing.parameters_raw(tt).parameters.data(2);
 
             end
-            % Make the datacubes
 
+            % Make the datacubes
             for tt=1:length(Sid_Processing.data_raw)
                 Sid_Processing.data_raw(tt).data=reshape(Sid_Processing.data_raw(tt).data,[Sid_Processing.N_t,Sid_Processing.N_x,Sid_Processing.N_y]);
                 if Sid_Processing.DCopt
                     Sid_Processing.data_raw(tt).data_R=Sid_Processing.data_raw(tt).data(end:-1:1,1:Sid_Processing.N_x/2,:);
                     Sid_Processing.data_raw(tt).data_T=Sid_Processing.data_raw(tt).data(end:-1:1,Sid_Processing.N_x/2+1:end,:);
                 end
-
-
             end
         end
         % MAKE A FUNCTION FOR THE WINDOWING OF THE BEGINING PULSE INTERACTION
@@ -127,11 +140,11 @@ classdef Sid_Processing
 
                 temp_data4D(tt).data_R=Sid_Processing.data_processed(tt).data_R(Indice_start(tt)+Sid_Processing.window_interp:Indice_end(tt)-Sid_Processing.window_interp,:,:);
                 temp_data4D(tt).t=time_axis(Indice_start(tt)+Sid_Processing.window_interp:Indice_end(tt)-Sid_Processing.window_interp)+Sid_Processing.delays(tt)*1e-12;
-
                 %                 if tt==1
                 %                      temp_data4D(tt).data=Sid_Processing.data_processed(tt).data_R(1:end-Intersection(tt),:,:);
                 %                      temp_data4D(tt).t=time_axis(1:end-Intersection(tt))+Sid_Processing.delays(tt)*1e-12;
-                %                 elseif tt==length(Sid_Processing.delays)
+                %                 elseif
+                %                 tt==length(Sid_Processing.delays)+++
                 %                     temp_data4D(tt).data=Sid_Processing.data_processed(tt).data_R(Intersection(tt-1):end,:,:);
                 %                      temp_data4D(tt).t=time_axis(Intersection(tt-1):end)+Sid_Processing.delays(tt)*1e-12;
                 %                 else
@@ -169,27 +182,21 @@ classdef Sid_Processing
         end
 
         function Sid_Processing=stitch_interp(Sid_Processing)% to do
-            Total_delay=1/SP.Clock_Freq*SP.N_t*SP.DazzlerTimeConversion;
-            time_axis=0:Total_delay/(SP.N_t-1):Total_delay;
-            t_ini=repmat(time_axis,1,size(SP.delays,2));
-            t_ini=t_ini+repelem(SP.delays,264)*1e-12;
+            Total_delay=1/Sid_Processing.Clock_Freq*Sid_Processing.N_t*Sid_Processing.DazzlerTimeConversion;
+            time_axis=0:Total_delay/(Sid_Processing.N_t-1):Total_delay;
+            t_ini=repmat(time_axis,1,size(Sid_Processing.delays,2));
+            t_ini=t_ini+repelem(Sid_Processing.delays,264)*1e-12;
 
 
         end
 
         function Sid_Processing=Tnorm_and_center_data(Sid_Processing,norm,center,deadtime) % TO DO
 
-
-
-
             if norm
-
                 for tt=1:size(Sid_Processing.data_processed,2)
                     Transmission=Sid_Processing.data_processed(tt).data_T;
                     Raman=Sid_Processing.data_processed(tt).data_R;
                     Sid_Processing.data_processed(tt).data_R=Raman./permute(1+permute(Transmission,[2 3 1])./squeeze(max(Transmission,[],1)),[3 1 2]);
-
-
                 end
             end
 
@@ -206,9 +213,6 @@ classdef Sid_Processing
                 end
                 Sid_Processing.data_processed(1).data_R=Sid_Processing.data_processed(1).data_R-mean(Sid_Processing.data_processed(1).data_R(1:deadtime-10));
             end
-
-
-
         end
 
         function Sid_Processing=window_overlap(Sid_Processing,tukey_window_param,deadtime)
@@ -248,9 +252,7 @@ classdef Sid_Processing
                     Sid_Processing.data_processed(tt).data_T=Sid_Processing.data_raw(tt).data_T;
                 end
             end
-
         end
-
 
         function Sid_Processing=get_values_from_XML(Sid_Processing)
             dom=xmlread('0000_.XML');
@@ -261,15 +263,75 @@ classdef Sid_Processing
             Sid_Processing.ScanRange=str2double(char(getNodeValue(Val_ScanRangeValPix.item(0))));
 
         end
-
         %         function Sid_Processing=fodlers(Sid_Processing)
         %
         %         end
+    
 
+        function Sid_Processing=FT(Sid_Processing, time_vec, Data_vec)
+            dt = diff(time_vec);
+            dt = dt(1:end-1);
+            dt = mean(abs(dt));
+            Fs = 1/dt;
+    
+            NFFT = 2^(nextpow2(size(Data_vec,1))+1);
+    
+            ReducedMeanSignal = bsxfun(@minus,Data_vec,mean(Data_vec,1));
+            Y = dt*(fft(ReducedMeanSignal,NFFT,1));
+            F = (((0:1/NFFT:1-1/NFFT)*Fs).');
+            Sid_Processing.wn = fftshift(F-Fs/2);
+            Sid_Processing.wn = Sid_Processing.wn(1:ceil(length(Sid_Processing.wn)/2))/3e8/100; %remove the negatives and put them in the unit cm^-1
+            Sid_Processing.hyperspectralRamanImageComplex = Y;
 
+        end
 
+        function Sid_Processing=pick_window(Sid_Processing, window)
 
+            switch window
 
+                case 'blackman'
+                    Sid_Processing.window2 = [blackman(round(Sid_Processing.ratio_window*length(Sid_Processing.data_stitched.t_stitched))).' zeros(1,round((1-Sid_Processing.ratio_window)*length(Sid_Processing.data_stitched.t_stitched)))];
+                    %Sid_Processing.window2=ones(size(Sid_Processing.window2));
+
+                case 'tukeywin'
+                    Sid_Processing.window2 = [zeros(1,round((1-Sid_Processing.ratio_window)*length(Sid_Processing.data_stitched.t_stitched))) tukeywin(round(Sid_Processing.ratio_window*length(Sid_Processing.data_stitched.t_stitched)),Sid_Processing.tukey_window_param).' ];
+                    % Sid_Processing.window2=ones(size(Sid_Processing.window2));
+
+                case '...'
+                    Sid_Processing.window2 = [blackman(round(Sid_Processing.ratio_window*length(Sid_Processing.data_stitched.t_stitched))).' zeros(1,round((1-Sid_Processing.ratio_window)*length(Sid_Processing.data_stitched.t_stitched)))];
+                    Sid_Processing.window2=ones(size(Sid_Processing.window2));
+            end
+        end
+
+        function Sid_Processing=make_raman_spectrum(Sid_Processing)
+            
+            Sid_Processing.ramanSpectrum = abs(sum(sum(Sid_Processing.hyperspectralRamanImageComplex,2),3));
+            Sid_Processing.ramanSpectrum = Sid_Processing.ramanSpectrum(1:ceil(length(Sid_Processing.ramanSpectrum)/2));
+            
+            %Here it takes the values of the 3 biggest peaks and saves it in the wns_plot variable to plot later
+            [yPeaks,xPeaks] = findpeaks(Sid_Processing.ramanSpectrum,Sid_Processing.wn,'SortStr','descend');
+            Sid_Processing.wns_plot=[xPeaks(1) xPeaks(2) xPeaks(3)];
+
+            %Here it takes the indices for the plot
+            for i=1:size(Sid_Processing.wns_plot,2)
+                Sid_Processing.pixels_plot(i) = find(abs(Sid_Processing.wn-Sid_Processing.wns_plot(i))==min(abs(Sid_Processing.wn-Sid_Processing.wns_plot(i))));
+            end
+        end
+
+            function Sid_Processing=make_raman_spectrum_with_mask(Sid_Processing, mask)
+            
+                %arrive une mask 50x50 com 1s et 0s, avec la selection
+                %faite pour lutilissateur, on utilise la mask pour retirer
+                %ces valeurs do hyperspectral
+            mask_expanded = repmat(mask, [1, 1, size(Sid_Processing.hyperspectralRamanImageComplex,1)]);
+            mask_expanded = permute(mask_expanded, [3, 1, 2]);
+            hyperspectralRamanImageComplexFiltered = Sid_Processing.hyperspectralRamanImageComplex.*mask_expanded;
+
+            Sid_Processing.ramanSpectrum = abs(sum(sum(hyperspectralRamanImageComplexFiltered,2),3));
+            Sid_Processing.ramanSpectrum = Sid_Processing.ramanSpectrum(1:ceil(length(hyperspectralRamanImageComplexFiltered)/2));
+            
+           
+        end
 
 
     end

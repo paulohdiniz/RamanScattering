@@ -393,32 +393,32 @@ set(gca,'ytick',[])
 %% To plot with scale bar
 % This is the SNR in the particular pixel that I have defined earlier
 
-fig=figure ;set(gcf,'Color','white');fig.Position=[0 50 1850 900];
-plot(t_delay*1E12,signal_pixel_array);
-hold on;
-plot(t_delay*1E12,Noise_pixel_array);
-xlabel('delay [ps]','fontsize',AxisFont);
-ylabel('Intensity change','fontsize',AxisFont);
-title(['Signal vs noise, SNR = ', num2str(SNR_through_variance)],'fontsize',TitleFontSize);
-legend('Signal','Noise');
-% xlim([0 16]);
-ylim(1.2*[min(signal_pixel_array(PixelsForFourierSpect)) max(signal_pixel_array(PixelsForFourierSpect))]);
-
- fig=figure; set(gcf,'Color','white');fig.Position=[0 50 1850 900];
- subplot(2,3,1);
- plot(t_delay_spect*1E12,mean_time_trace);hold on
- plot(t_delay_spect(PixelsForFourierSpect(1))*1E12,mean_time_trace(PixelsForFourierSpect(1)),'o'); hold off% This line is just to have the marker
- xlabel('delay [ps]','fontsize',AxisFont);
- ylabel('Intensity change','fontsize',AxisFont);
- title('Integrated temporal response','fontsize',TitleFontSize)
- ylim(1.2*[min(min(mean_time_trace(PixelsForFourierSpect))), max(max(mean_time_trace(PixelsForFourierSpect)))]);
-  xlim([0 15]);
- %ylim([0 5]);
- text(SubplotLabelPos(1),SubplotLabelPos(2),'a','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',AxisFont)
- set(gca,'ytick',[])
-%  legend('Noise','Signal')
- 
- subplot(2,3,2);
+% fig=figure ;set(gcf,'Color','white');fig.Position=[0 50 1850 900];
+% plot(t_delay*1E12,signal_pixel_array);
+% hold on;
+% plot(t_delay*1E12,Noise_pixel_array);
+% xlabel('delay [ps]','fontsize',AxisFont);
+% ylabel('Intensity change','fontsize',AxisFont);
+% title(['Signal vs noise, SNR = ', num2str(SNR_through_variance)],'fontsize',TitleFontSize);
+% legend('Signal','Noise');
+% % xlim([0 16]);
+% ylim(1.2*[min(signal_pixel_array(PixelsForFourierSpect)) max(signal_pixel_array(PixelsForFourierSpect))]);
+% 
+%  fig=figure; set(gcf,'Color','white');fig.Position=[0 50 1850 900];
+%  subplot(2,3,1);
+%  plot(t_delay_spect*1E12,mean_time_trace);hold on
+%  plot(t_delay_spect(PixelsForFourierSpect(1))*1E12,mean_time_trace(PixelsForFourierSpect(1)),'o'); hold off% This line is just to have the marker
+%  xlabel('delay [ps]','fontsize',AxisFont);
+%  ylabel('Intensity change','fontsize',AxisFont);
+%  title('Integrated temporal response','fontsize',TitleFontSize)
+%  ylim(1.2*[min(min(mean_time_trace(PixelsForFourierSpect))), max(max(mean_time_trace(PixelsForFourierSpect)))]);
+%   xlim([0 15]);
+%  %ylim([0 5]);
+%  text(SubplotLabelPos(1),SubplotLabelPos(2),'a','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',AxisFont)
+%  set(gca,'ytick',[])
+% %  legend('Noise','Signal')
+% 
+%  subplot(2,3,2);
  
 %  yyaxis left;
 %  plot(wn,RamanSpectrum);
@@ -441,96 +441,96 @@ ylim(1.2*[min(signal_pixel_array(PixelsForFourierSpect)) max(signal_pixel_array(
 %  text(SubplotLabelPos(1),SubplotLabelPos(2),'b','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',AxisFont)
  
  
- SpntData = extract_data_from_2d_graph(SpontDataAdress);
-        plot(wn,RamanSpectrum); hold on ;
-        plot(SpntData(1,:),SpntData(2,:)/max(SpntData(2,:))*max(RamanSpectrum),'r-'); hold off
-                %plot(wn,ones(size(wn))*ThrshVal,'r-'); hold off
-        xlabel('Wavenumbers [cm^{-1}]','fontsize',AxisFont);
-                ylabel('Raman Spectrum','fontsize',AxisFont);
-        xlim([0,160])
-        title('Integrated Raman Spectrum','fontsize',TitleFontSize)
-        text(SubplotLabelPos(1),SubplotLabelPos(2),'b','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',AxisFont)
-%         set(gca,'ytick',[])
- 
- 
- subplot(2,3,3);
- if DCopt
-     MeanImage = mean(DCPD,1);% Changing the range to 5:4+ScaleBarLength instead of 5:5+ScaleBarLength because we end up having one extra pixel. If scale bar length is 10 it means we wish to have 10 pixels in the scale bar. Going from 5:5+scalebarlength we have 5:15 which is 0 to 10 = 11 pixels. 
-     MeanImage(:,46:47,5:4+ScaleBarLength) = max(max(MeanImage));%Its important to have this line before imagesc because we are actually writing on the color map of the actual image
-     imagesc(squeeze(MeanImage));
-     title('DC PD signal','fontsize',TitleFontSize);
- else
-     imagesc(SummedImageOverDelay);
-     title('Integration over all delays','fontsize',TitleFontSize);
- end
- colormap('hot');
- xlabel('pixels');
- ylabel('pixels');
- colorbar;
- %title('Integrated Raman Spectrum','fontsize',TitleFontSize)
- text(SubplotLabelPos(1),SubplotLabelPos(2),'c','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',AxisFont)
- axis off
-%  set(colorbar,'YTick',[])
- 
- WnPix = pixels_plot(1);
- subplot(2,3,4);
-  MeanImage = mean(HyperspectralRamanImage(WnPix-1:WnPix+1,:,:),1);%
- MeanImage(:,46:47,5:4+ScaleBarLength) = max(max(MeanImage));% Changing the range to 5:4+ScaleBarLength instead of 5:5+ScaleBarLength because we end up having one extra pixel. If scale bar length is 10 it means we wish to have 10 pixels in the scale bar. Going from 5:5+scalebarlength we have 5:15 which is 0 to 10 = 11 pixels. 
- imagesc(squeeze(MeanImage));
- xlabel('pixels','fontsize',AxisFont);
- ylabel('pixels','fontsize',AxisFont);
- colorbar;
- title(sprintf('Image at %.0f cm^{-1}',wn(WnPix)),'fontsize',TitleFontSize);
- text(SubplotLabelPos(1),SubplotLabelPos(2),'d','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',AxisFont)
- colormap('hot')
- axis off
- axis square
-%  set(colorbar,'YTick',[])
- 
- WnPix = pixels_plot(2);
- subplot(2,3,5);
- MeanImage = mean(HyperspectralRamanImage(WnPix-1:WnPix+1,:,:),1);%
- MeanImage(:,46:47,5:4+ScaleBarLength) = max(max(MeanImage));% Changing the range to 5:4+ScaleBarLength instead of 5:5+ScaleBarLength because we end up having one extra pixel. If scale bar length is 10 it means we wish to have 10 pixels in the scale bar. Going from 5:5+scalebarlength we have 5:15 which is 0 to 10 = 11 pixels. 
- imagesc(squeeze(MeanImage));
- xlabel('pixels','fontsize',AxisFont);
- ylabel('pixels','fontsize',AxisFont);
- colorbar;
- title(sprintf('Image at %.0f cm^{-1}',wn(WnPix)),'fontsize',TitleFontSize);
- text(SubplotLabelPos(1),SubplotLabelPos(2),'e','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',AxisFont)
- colormap('hot')
- axis off
- axis square
-%  set(colorbar,'YTick',[])
- 
- WnPix = pixels_plot(3);
- subplot(2,3,6);
- MeanImage = mean(HyperspectralRamanImage(WnPix-1:WnPix+1,:,:),1);%
- MeanImage(:,46:47,5:4+ScaleBarLength) = max(max(MeanImage));% Changing the range to 5:4+ScaleBarLength instead of 5:5+ScaleBarLength because we end up having one extra pixel. If scale bar length is 10 it means we wish to have 10 pixels in the scale bar. Going from 5:5+scalebarlength we have 5:15 which is 0 to 10 = 11 pixels. 
- if SHGOpt
-     MeanImage = SHGdata;
-     MeanImage(46:47,5:4+ScaleBarLength) = max(max(MeanImage));
- end
- imagesc(squeeze(MeanImage));
- xlabel('pixels','fontsize',AxisFont);
- ylabel('pixels','fontsize',AxisFont);
- title(sprintf('Image at %.0f cm^{-1}',wn(WnPix)),'fontsize',TitleFontSize);
- text(SubplotLabelPos(1),SubplotLabelPos(2),'f','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',AxisFont)
- if SHGOpt
- title(sprintf('SHG image'),'fontsize',TitleFontSize);
- end
- colorbar;
- colormap('hot')
- axis off
- axis square
-%  set(colorbar,'YTick',[])
-   
- fig=figure; set(gcf,'Color','white');fig.Position=[0 50 1850 900];
- plot(wn,RamanSpectrum);
- %         plot(SpntData(1,:),SpntData(2,:)/max(SpntData(2,:))*max(RamanSpectrum),'r-'); hold off
- %plot(wn,ones(size(wn))*ThrshVal,'r-'); hold off
- xlabel('Wavenumbers [cm^{-1}]','fontsize',AxisFont);
- ylabel('Raman Spectrum','fontsize',AxisFont);
- xlim([0,160])
- title('Integrated Raman Spectrum','fontsize',TitleFontSize)
- text(SubplotLabelPos(1),SubplotLabelPos(2),'b','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',AxisFont)
-%  set(gca,'ytick',[])
+%  SpntData = extract_data_from_2d_graph(SpontDataAdress);
+%         plot(wn,RamanSpectrum); hold on ;
+%         plot(SpntData(1,:),SpntData(2,:)/max(SpntData(2,:))*max(RamanSpectrum),'r-'); hold off
+%                 %plot(wn,ones(size(wn))*ThrshVal,'r-'); hold off
+%         xlabel('Wavenumbers [cm^{-1}]','fontsize',AxisFont);
+%                 ylabel('Raman Spectrum','fontsize',AxisFont);
+%         xlim([0,160])
+%         title('Integrated Raman Spectrum','fontsize',TitleFontSize)
+%         text(SubplotLabelPos(1),SubplotLabelPos(2),'b','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',AxisFont)
+% %         set(gca,'ytick',[])
+% 
+% 
+%  subplot(2,3,3);
+%  if DCopt
+%      MeanImage = mean(DCPD,1);% Changing the range to 5:4+ScaleBarLength instead of 5:5+ScaleBarLength because we end up having one extra pixel. If scale bar length is 10 it means we wish to have 10 pixels in the scale bar. Going from 5:5+scalebarlength we have 5:15 which is 0 to 10 = 11 pixels. 
+%      MeanImage(:,46:47,5:4+ScaleBarLength) = max(max(MeanImage));%Its important to have this line before imagesc because we are actually writing on the color map of the actual image
+%      imagesc(squeeze(MeanImage));
+%      title('DC PD signal','fontsize',TitleFontSize);
+%  else
+%      imagesc(SummedImageOverDelay);
+%      title('Integration over all delays','fontsize',TitleFontSize);
+%  end
+%  colormap('hot');
+%  xlabel('pixels');
+%  ylabel('pixels');
+%  colorbar;
+%  %title('Integrated Raman Spectrum','fontsize',TitleFontSize)
+%  text(SubplotLabelPos(1),SubplotLabelPos(2),'c','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',AxisFont)
+%  axis off
+% %  set(colorbar,'YTick',[])
+% 
+%  WnPix = pixels_plot(1);
+%  subplot(2,3,4);
+%   MeanImage = mean(HyperspectralRamanImage(WnPix-1:WnPix+1,:,:),1);%
+%  MeanImage(:,46:47,5:4+ScaleBarLength) = max(max(MeanImage));% Changing the range to 5:4+ScaleBarLength instead of 5:5+ScaleBarLength because we end up having one extra pixel. If scale bar length is 10 it means we wish to have 10 pixels in the scale bar. Going from 5:5+scalebarlength we have 5:15 which is 0 to 10 = 11 pixels. 
+%  imagesc(squeeze(MeanImage));
+%  xlabel('pixels','fontsize',AxisFont);
+%  ylabel('pixels','fontsize',AxisFont);
+%  colorbar;
+%  title(sprintf('Image at %.0f cm^{-1}',wn(WnPix)),'fontsize',TitleFontSize);
+%  text(SubplotLabelPos(1),SubplotLabelPos(2),'d','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',AxisFont)
+%  colormap('hot')
+%  axis off
+%  axis square
+% %  set(colorbar,'YTick',[])
+% 
+%  WnPix = pixels_plot(2);
+%  subplot(2,3,5);
+%  MeanImage = mean(HyperspectralRamanImage(WnPix-1:WnPix+1,:,:),1);%
+%  MeanImage(:,46:47,5:4+ScaleBarLength) = max(max(MeanImage));% Changing the range to 5:4+ScaleBarLength instead of 5:5+ScaleBarLength because we end up having one extra pixel. If scale bar length is 10 it means we wish to have 10 pixels in the scale bar. Going from 5:5+scalebarlength we have 5:15 which is 0 to 10 = 11 pixels. 
+%  imagesc(squeeze(MeanImage));
+%  xlabel('pixels','fontsize',AxisFont);
+%  ylabel('pixels','fontsize',AxisFont);
+%  colorbar;
+%  title(sprintf('Image at %.0f cm^{-1}',wn(WnPix)),'fontsize',TitleFontSize);
+%  text(SubplotLabelPos(1),SubplotLabelPos(2),'e','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',AxisFont)
+%  colormap('hot')
+%  axis off
+%  axis square
+% %  set(colorbar,'YTick',[])
+% 
+%  WnPix = pixels_plot(3);
+%  subplot(2,3,6);
+%  MeanImage = mean(HyperspectralRamanImage(WnPix-1:WnPix+1,:,:),1);%
+%  MeanImage(:,46:47,5:4+ScaleBarLength) = max(max(MeanImage));% Changing the range to 5:4+ScaleBarLength instead of 5:5+ScaleBarLength because we end up having one extra pixel. If scale bar length is 10 it means we wish to have 10 pixels in the scale bar. Going from 5:5+scalebarlength we have 5:15 which is 0 to 10 = 11 pixels. 
+%  if SHGOpt
+%      MeanImage = SHGdata;
+%      MeanImage(46:47,5:4+ScaleBarLength) = max(max(MeanImage));
+%  end
+%  imagesc(squeeze(MeanImage));
+%  xlabel('pixels','fontsize',AxisFont);
+%  ylabel('pixels','fontsize',AxisFont);
+%  title(sprintf('Image at %.0f cm^{-1}',wn(WnPix)),'fontsize',TitleFontSize);
+%  text(SubplotLabelPos(1),SubplotLabelPos(2),'f','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',AxisFont)
+%  if SHGOpt
+%  title(sprintf('SHG image'),'fontsize',TitleFontSize);
+%  end
+%  colorbar;
+%  colormap('hot')
+%  axis off
+%  axis square
+% %  set(colorbar,'YTick',[])
+% 
+%  fig=figure; set(gcf,'Color','white');fig.Position=[0 50 1850 900];
+%  plot(wn,RamanSpectrum);
+%  %         plot(SpntData(1,:),SpntData(2,:)/max(SpntData(2,:))*max(RamanSpectrum),'r-'); hold off
+%  %plot(wn,ones(size(wn))*ThrshVal,'r-'); hold off
+%  xlabel('Wavenumbers [cm^{-1}]','fontsize',AxisFont);
+%  ylabel('Raman Spectrum','fontsize',AxisFont);
+%  xlim([0,160])
+%  title('Integrated Raman Spectrum','fontsize',TitleFontSize)
+%  text(SubplotLabelPos(1),SubplotLabelPos(2),'b','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',AxisFont)
+% %  set(gca,'ytick',[])

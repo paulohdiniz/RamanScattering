@@ -21,14 +21,16 @@ classdef Sid_Processing
         folders
         data_raw
         data_processed
-        
         parameters_raw
+
         % TF Parameters
         DelayToEndFourier=15E-12;
+
         %Image Parameters
         N_x
         N_y
         N_t
+
         % interpolation
         data_stitched
         t_interp
@@ -39,6 +41,7 @@ classdef Sid_Processing
         hyperspectralRamanImageComplex
         wn
         ramanSpectrum
+        ramanSpectrumWithMask
         wns_plot
         pixels_plot
 
@@ -47,7 +50,6 @@ classdef Sid_Processing
         ratio_window
         tukey_window_param
         deadtime
-
 
     end
 
@@ -72,8 +74,8 @@ classdef Sid_Processing
                 end
             end
             Sid_Processing.folders=folder_content(indice(xp_number,indice(xp_number,:)~=0));
+            
             %Load Data and Parameters
-
             for tt=1:length(Sid_Processing.folders)
                 cd(Sid_Processing.folders(tt).name)
                 Sid_Processing.data_raw(tt).data=importdata('0000_.ASC');
@@ -81,6 +83,7 @@ classdef Sid_Processing
                 Sid_Processing=get_values_from_XML(Sid_Processing);
                 cd ..
             end
+
             % Get the associated Delays
             for tt=1:length(Sid_Processing.folders)
                 A=Sid_Processing.folders(tt).name;
@@ -103,8 +106,8 @@ classdef Sid_Processing
                 end
             end
         end
-        % MAKE A FUNCTION FOR THE WINDOWING OF THE BEGINING PULSE INTERACTION
 
+        % MAKE A FUNCTION FOR THE WINDOWING OF THE BEGINING PULSE INTERACTION
         function Sid_Processing=stitch_time_axis_no_T(Sid_Processing)
             Total_delay=1/Sid_Processing.Clock_Freq*Sid_Processing.N_t*Sid_Processing.DazzlerTimeConversion;
             time_axis=0:Total_delay/(Sid_Processing.N_t-1):Total_delay;
@@ -134,8 +137,8 @@ classdef Sid_Processing
                 Indice_end(tt)=indice_1(1)+Intersection(tt)-2;
                 Indice_start(tt+1)=Intersection(tt);
             end
-            % We store them in in a 4D matrix because we don't want to stitch them now.
-            
+
+            % We store them in in a 4D matrix because we don't want to stitch them now.  
             for tt=1:length(Sid_Processing.delays)
 
                 temp_data4D(tt).data_R=Sid_Processing.data_processed(tt).data_R(Indice_start(tt)+Sid_Processing.window_interp:Indice_end(tt)-Sid_Processing.window_interp,:,:);
@@ -161,33 +164,21 @@ classdef Sid_Processing
             t_out=0:Total_delay/(Sid_Processing.N_t-1):max(t_ini);
 
             switch interp_method
-
                 case 'makima'
-
                     temp= makima(t_stitch,data_R_stitch,t_out);
-
                     Sid_Processing.data_stitched.data_R = temp;
                     Sid_Processing.data_stitched.t_stitched=t_out;
+
                 case 'pchirp'
                     temp= pchip(t_stitch,data_R_stitch,t_out);
-
                     Sid_Processing.data_stitched.data_R = temp;
                     Sid_Processing.data_stitched.t_stitched=t_out;
 
                 case 'linear'
-                     temp= pchip(t_stitch,data_R_stitch,t_out);
+                    temp= pchip(t_stitch,data_R_stitch,t_out);
                     Sid_Processing.data_stitched.data_R = temp;
-                Sid_Processing.data_stitched.t_stitched=t_out;
+                    Sid_Processing.data_stitched.t_stitched=t_out;
             end
-        end
-
-        function Sid_Processing=stitch_interp(Sid_Processing)% to do
-            Total_delay=1/Sid_Processing.Clock_Freq*Sid_Processing.N_t*Sid_Processing.DazzlerTimeConversion;
-            time_axis=0:Total_delay/(Sid_Processing.N_t-1):Total_delay;
-            t_ini=repmat(time_axis,1,size(Sid_Processing.delays,2));
-            t_ini=t_ini+repelem(Sid_Processing.delays,264)*1e-12;
-
-
         end
 
         function Sid_Processing=Tnorm_and_center_data(Sid_Processing,norm,center,deadtime) % TO DO
@@ -206,7 +197,6 @@ classdef Sid_Processing
                 % same average pixel by pixel.
                 %                 Mean_1=(mean(Sid_Processing.data_processed(1).data_R,1));
                 for tt=1:size(Sid_Processing.data_processed,2)
-
                     mean_per_pixel=repmat(mean(Sid_Processing.data_processed(tt).data_R,1),264,1,1);%-repmat(Mean_1,264,1,1);
                     %                     overall_mean=(mean(Sid_Processing.data_processed(tt).data_R(:)));
                     Sid_Processing.data_processed(tt).data_R=Sid_Processing.data_processed(tt).data_R-mean_per_pixel;
@@ -220,7 +210,6 @@ classdef Sid_Processing
             % specified
             signal=sum(sum(Sid_Processing.data_raw(1).data_R,2),3);
             N_window=Sid_Processing.N_t*2;
-
             answer={};
             deadtime2=deadtime;
             while ~any(cellfun(@(x) (strcmp(x,'yes')),answer))
@@ -266,14 +255,13 @@ classdef Sid_Processing
         %         function Sid_Processing=fodlers(Sid_Processing)
         %
         %         end
-    
 
+        %Fourier transform
         function Sid_Processing=FT(Sid_Processing, time_vec, Data_vec)
             dt = diff(time_vec);
             dt = dt(1:end-1);
             dt = mean(abs(dt));
             Fs = 1/dt;
-    
             NFFT = 2^(nextpow2(size(Data_vec,1))+1);
     
             ReducedMeanSignal = bsxfun(@minus,Data_vec,mean(Data_vec,1));
@@ -282,24 +270,36 @@ classdef Sid_Processing
             Sid_Processing.wn = fftshift(F-Fs/2);
             Sid_Processing.wn = Sid_Processing.wn(1:ceil(length(Sid_Processing.wn)/2))/3e8/100; %remove the negatives and put them in the unit cm^-1
             Sid_Processing.hyperspectralRamanImageComplex = Y;
-
         end
 
-        function Sid_Processing=pick_window(Sid_Processing, window)
+        function Sid_Processing=pick_fourier_window(Sid_Processing, window)
 
             switch window
 
+                %Blackman window
                 case 'blackman'
                     Sid_Processing.window2 = [blackman(round(Sid_Processing.ratio_window*length(Sid_Processing.data_stitched.t_stitched))).' zeros(1,round((1-Sid_Processing.ratio_window)*length(Sid_Processing.data_stitched.t_stitched)))];
-                    %Sid_Processing.window2=ones(size(Sid_Processing.window2));
-
+                
+                %Tukey (tapered cosine) window
                 case 'tukeywin'
                     Sid_Processing.window2 = [zeros(1,round((1-Sid_Processing.ratio_window)*length(Sid_Processing.data_stitched.t_stitched))) tukeywin(round(Sid_Processing.ratio_window*length(Sid_Processing.data_stitched.t_stitched)),Sid_Processing.tukey_window_param).' ];
-                    % Sid_Processing.window2=ones(size(Sid_Processing.window2));
+
+                %Hamming window
+                case 'hamming'
+                    Sid_Processing.window2 = [hamming(round(Sid_Processing.ratio_window*length(Sid_Processing.data_stitched.t_stitched))).' zeros(1,round((1-Sid_Processing.ratio_window)*length(Sid_Processing.data_stitched.t_stitched)))];
+
+                %Hann (Hanning) window
+                case 'hann'
+                    Sid_Processing.window2 = [hann(round(Sid_Processing.ratio_window*length(Sid_Processing.data_stitched.t_stitched))).' zeros(1,round((1-Sid_Processing.ratio_window)*length(Sid_Processing.data_stitched.t_stitched)))];
+
+                %Flat top weighted window
+                case 'flattopwin'
+                    Sid_Processing.window2 = [flattopwin(round(Sid_Processing.ratio_window*length(Sid_Processing.data_stitched.t_stitched))).' zeros(1,round((1-Sid_Processing.ratio_window)*length(Sid_Processing.data_stitched.t_stitched)))];
 
                 case '...'
                     Sid_Processing.window2 = [blackman(round(Sid_Processing.ratio_window*length(Sid_Processing.data_stitched.t_stitched))).' zeros(1,round((1-Sid_Processing.ratio_window)*length(Sid_Processing.data_stitched.t_stitched)))];
                     Sid_Processing.window2=ones(size(Sid_Processing.window2));
+                   
             end
         end
 
@@ -318,19 +318,23 @@ classdef Sid_Processing
             end
         end
 
-            function Sid_Processing=make_raman_spectrum_with_mask(Sid_Processing, mask)
-            
-                %arrive une mask 50x50 com 1s et 0s, avec la selection
-                %faite pour lutilissateur, on utilise la mask pour retirer
-                %ces valeurs do hyperspectral
+        function Sid_Processing=make_raman_spectrum_with_mask(Sid_Processing, mask)
+        
+            %arrive un mask 50x50 com 1s et 0s, avec la selection
+            %faite pour l'utilissateur, on utilise la mask pour retirer
+            %ces valeurs do hyperspectral
             mask_expanded = repmat(mask, [1, 1, size(Sid_Processing.hyperspectralRamanImageComplex,1)]);
             mask_expanded = permute(mask_expanded, [3, 1, 2]);
             hyperspectralRamanImageComplexFiltered = Sid_Processing.hyperspectralRamanImageComplex.*mask_expanded;
 
-            Sid_Processing.ramanSpectrum = abs(sum(sum(hyperspectralRamanImageComplexFiltered,2),3));
-            Sid_Processing.ramanSpectrum = Sid_Processing.ramanSpectrum(1:ceil(length(hyperspectralRamanImageComplexFiltered)/2));
-            
+            Sid_Processing.ramanSpectrumWithMask = abs(sum(sum(hyperspectralRamanImageComplexFiltered,2),3));
+            Sid_Processing.ramanSpectrumWithMask = Sid_Processing.ramanSpectrumWithMask(1:ceil(length(hyperspectralRamanImageComplexFiltered)/2));
            
+        end
+
+        function Sid_Processing=imagesc2rgb(Sid_Processing, im)
+        
+
         end
 
 

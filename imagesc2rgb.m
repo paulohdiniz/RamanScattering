@@ -7,6 +7,6 @@ function [rgb] = imagesc2rgb(im)
         c = linspace(h.Parent.CLim(1),h.Parent.CLim(2),n); % intensity range
         ind = reshape(interp1(c,1:n,im(:),'nearest'),size(im)); % indexed image
         rgb = ind2rgb(ind,cm); % rgb image
-
+        
 end
 

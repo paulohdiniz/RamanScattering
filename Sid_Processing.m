@@ -42,14 +42,19 @@ classdef Sid_Processing
         wn
         ramanSpectrum
         ramanSpectrumWithMask
+        rgbimg
         wns_plot
         pixels_plot
 
         %window
         window2
+        window2_name
         ratio_window
         tukey_window_param
         deadtime
+
+        %image processing
+        IP
 
     end
 
@@ -243,6 +248,26 @@ classdef Sid_Processing
             end
         end
 
+        function Sid_Processing=window_overlap_for_test(Sid_Processing,tukey_window_param,deadtime) %just for testing
+            % We kill the overlap with a half tukey window of the parameter
+            % specified
+            N_window=Sid_Processing.N_t*2;
+            deadtime2=deadtime;
+            window=[zeros(deadtime2,1).' tukeywin(N_window,tukey_window_param).' ].';
+            window=window(1:Sid_Processing.N_t);
+
+            % TO DO :
+            % THEN AND STITICHING
+            for tt=1:size(Sid_Processing.data_raw,2)
+                if tt==1
+                    Sid_Processing.data_processed(1).data_R=Sid_Processing.data_raw(1).data_R.*repmat(window,1,size(Sid_Processing.data_raw(1).data_R,2),size(Sid_Processing.data_raw(1).data_R,3));
+                    Sid_Processing.data_processed(tt).data_T=Sid_Processing.data_raw(tt).data_T;
+                else
+                    Sid_Processing.data_processed(tt).data_R=Sid_Processing.data_raw(tt).data_R;
+                    Sid_Processing.data_processed(tt).data_T=Sid_Processing.data_raw(tt).data_T;
+                end
+            end
+        end
         function Sid_Processing=get_values_from_XML(Sid_Processing)
             dom=xmlread('0000_.XML');
             Find = dom.getElementsByTagName('Val');
@@ -301,6 +326,7 @@ classdef Sid_Processing
                     Sid_Processing.window2=ones(size(Sid_Processing.window2));
                    
             end
+            Sid_Processing.window2=Sid_Processing.window2(1:length(Sid_Processing.data_stitched.t_stitched));
         end
 
         function Sid_Processing=make_raman_spectrum(Sid_Processing)
@@ -308,10 +334,40 @@ classdef Sid_Processing
             Sid_Processing.ramanSpectrum = abs(sum(sum(Sid_Processing.hyperspectralRamanImageComplex,2),3));
             Sid_Processing.ramanSpectrum = Sid_Processing.ramanSpectrum(1:ceil(length(Sid_Processing.ramanSpectrum)/2));
             
-            %Here it takes the values of the 3 biggest peaks and saves it in the wns_plot variable to plot later
-            [yPeaks,xPeaks] = findpeaks(Sid_Processing.ramanSpectrum,Sid_Processing.wn,'SortStr','descend');
-            Sid_Processing.wns_plot=[xPeaks(1) xPeaks(2) xPeaks(3)];
+            % %Here it takes the values of the 3 biggest peaks and saves it in the wns_plot variable to plot later
+            % [yPeaks,xPeaks,k,prm] = findpeaks(Sid_Processing.ramanSpectrum,Sid_Processing.wn,'SortStr','descend','MinPeakDistance',10);
+            % [~,i] = sort(prm,'descend');
+            %  if (size(xPeaks) ~= 0)
+            %      Sid_Processing.wns_plot=[xPeaks(1) xPeaks(2) xPeaks(3)];
+            %  else
+            %      Sid_Processing.wns_plot=[0 0 0];
+            %  end
+            % 
+            % 
+            % %Here it takes the indices for the plot
+            % for i=1:size(Sid_Processing.wns_plot,2)
+            %     Sid_Processing.pixels_plot(i) = find(abs(Sid_Processing.wn-Sid_Processing.wns_plot(i))==min(abs(Sid_Processing.wn-Sid_Processing.wns_plot(i))));
+            % end
+        end
 
+        function Sid_Processing=points_to_plot_by_ssim(Sid_Processing)
+            temp2=squeeze(mean((Sid_Processing.data_processed(1).data_T),[1]));
+            temp2=(temp2-min(temp2(:)))./max(temp2(:));
+            Sid_Processing.IP.mat_ref = temp2;
+
+            for j = 1:size(Sid_Processing.hyperspectralRamanImageComplex,1)/2
+                temp=squeeze(abs(Sid_Processing.hyperspectralRamanImageComplex(j,:,:)));
+                temp=(temp-min(temp(:)))./max(temp(:));
+                Sid_Processing.IP.mat_img_wn{j} = temp;
+                Sid_Processing.IP.ssim_wn(j) = ssim(temp,temp2);
+            end
+            [~,xPeaks] = findpeaks(Sid_Processing.IP.ssim_wn, Sid_Processing.wn, 'SortStr','descend');
+            if (size(xPeaks) ~= 0)
+               Sid_Processing.wns_plot = [xPeaks(1) xPeaks(2) xPeaks(3)];
+            else
+               Sid_Processing.IP.peaks_ssim_wn = [0 0 0];
+            end
+            
             %Here it takes the indices for the plot
             for i=1:size(Sid_Processing.wns_plot,2)
                 Sid_Processing.pixels_plot(i) = find(abs(Sid_Processing.wn-Sid_Processing.wns_plot(i))==min(abs(Sid_Processing.wn-Sid_Processing.wns_plot(i))));
@@ -320,9 +376,8 @@ classdef Sid_Processing
 
         function Sid_Processing=make_raman_spectrum_with_mask(Sid_Processing, mask)
         
-            %arrive un mask 50x50 com 1s et 0s, avec la selection
-            %faite pour l'utilissateur, on utilise la mask pour retirer
-            %ces valeurs do hyperspectral
+            % we import a mask 50x50 com 1s and 0s, with the selection made for the user
+            % we use the mask to remove these values on hyperspectral
             mask_expanded = repmat(mask, [1, 1, size(Sid_Processing.hyperspectralRamanImageComplex,1)]);
             mask_expanded = permute(mask_expanded, [3, 1, 2]);
             hyperspectralRamanImageComplexFiltered = Sid_Processing.hyperspectralRamanImageComplex.*mask_expanded;
@@ -332,12 +387,47 @@ classdef Sid_Processing
            
         end
 
-        function Sid_Processing=imagesc2rgb(Sid_Processing, im)
         
+        % function Sid_Processing = put_parameters(Sid_Processing, tukey_param, ratio, window_name, dead)
+        %     % Set the properties using the input arguments
+        %     Sid_Processing.DCopt = 1;
+        %     Sid_Processing.tukey_window_param = tukey_param;
+        %     Sid_Processing.ratio_window = ratio;
+        %     Sid_Processing.window2_name = window_name;
+        %     Sid_Processing.deadtime = dead;
+        % end
 
+        % Deep copy method for SP class        
+        function newSP = copy(obj)           
+            newSP = Sid_Processing();
+            newSP.ScanRange=obj.ScanRange;
+            newSP.Clock_Freq=obj.Clock_Freq;
+            newSP.delays=obj.delays;
+            newSP.folders=obj.folders;
+            newSP.data_raw=obj.data_raw;
+            newSP.data_processed=obj.data_processed;
+            newSP.parameters_raw=obj.parameters_raw;
+            newSP.N_x=obj.N_x;
+            newSP.N_y=obj.N_y;
+            newSP.N_t=obj.N_t;
+            newSP.data_stitched=obj.data_stitched;
+            newSP.t_interp=obj.t_interp;
+            newSP.data_interp=obj.data_interp;
+            newSP.hyperspectralRamanImageComplex=obj.hyperspectralRamanImageComplex;
+            newSP.wn=obj.wn;
+            newSP.ramanSpectrum=obj.ramanSpectrum;
+            newSP.ramanSpectrumWithMask=obj.ramanSpectrumWithMask;
+            newSP.rgbimg=obj.rgbimg;
+            newSP.wns_plot=obj.wns_plot;
+            newSP.pixels_plot=obj.pixels_plot;
+            newSP.window2=obj.window2;
+            newSP.window2_name=obj.window2_name;
+            newSP.ratio_window=obj.ratio_window;
+            newSP.tukey_window_param=obj.tukey_window_param;
+            newSP.deadtime=obj.deadtime;
         end
-
-
+        
     end
+
 
 end

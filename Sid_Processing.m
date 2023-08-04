@@ -13,7 +13,8 @@ classdef Sid_Processing
         DCopt = 1;
         SHGOpt =0;
         % Path parameters
-        Data_path='/Users/paulohd/Desktop/PauloDiniz';
+        Data_path= cd;
+        xp_number;
         % Data parameters
         ScanRange
         Clock_Freq
@@ -30,6 +31,11 @@ classdef Sid_Processing
         N_x
         N_y
         N_t
+
+        %Title Parameters
+        list_of_delays
+        function_generator
+        lockin_parameters
 
         % interpolation
         data_stitched
@@ -54,20 +60,32 @@ classdef Sid_Processing
         deadtime
 
         %image processing
-        IP
+        IP = Image_Processing();
 
     end
 
     methods
 
         function Sid_Processing=choose_folders_load_data(Sid_Processing,xp_number)
+            Sid_Processing.xp_number = xp_number;
             cd(Sid_Processing.Data_path) % we go there
             folder_content=dir(Sid_Processing.Data_path); % We look a the folder content
             folder_content = folder_content(~startsWith({folder_content.name}, ".")); %excludes all starting with "."
             folder_content = folder_content([folder_content.isdir]); %only folders, not files.
             pp=1;
             i_0=1;
-            names=cellfun(@(x) x(9:145),{folder_content(:).name},'UniformOutput',false);  
+
+            %Taking parameters of title
+            names_for_dir=cellfun(@(x) x(1:numel(x)),{folder_content(:).name},'UniformOutput',false);
+            for i=1:5
+                psdelay = string(regexp(names_for_dir{(xp_number-1)*5 +i}, '_([0-9]+)psdelay', 'tokens')); % match prendre tout
+                Sid_Processing.list_of_delays(i).delay = psdelay;
+            end
+                Sid_Processing.function_generator = string(regexp(names_for_dir{(xp_number-1)*5 +1}, 'FG_([0-9]+)MHZ', 'match'));
+                Sid_Processing.lockin_parameters = string(regexp(names_for_dir{(xp_number-1)*5 +1}, 'APE([\w]+)ns', 'match'));
+                %TO DO: put more variables...
+
+            names=cellfun(@(x) x(9:145),{folder_content(:).name},'UniformOutput',false);
             for ii=1:length(names)
                 bla=strcmp(names{i_0},names{ii});
                 if bla
@@ -248,7 +266,7 @@ classdef Sid_Processing
             end
         end
 
-        function Sid_Processing=window_overlap_for_test(Sid_Processing,tukey_window_param,deadtime) %just for testing
+        function Sid_Processing=window_overlap_to_test(Sid_Processing,tukey_window_param,deadtime) %just for testing
             % We kill the overlap with a half tukey window of the parameter
             % specified
             N_window=Sid_Processing.N_t*2;
@@ -298,7 +316,7 @@ classdef Sid_Processing
         end
 
         function Sid_Processing=pick_fourier_window(Sid_Processing, window)
-
+            Sid_Processing.window2_name = window;
             switch window
 
                 %Blackman window
@@ -351,6 +369,8 @@ classdef Sid_Processing
         end
 
         function Sid_Processing=points_to_plot_by_ssim(Sid_Processing)
+
+            %Reference image
             temp2=squeeze(mean((Sid_Processing.data_processed(1).data_T),[1]));
             temp2=(temp2-min(temp2(:)))./max(temp2(:));
             Sid_Processing.IP.mat_ref = temp2;
@@ -361,11 +381,21 @@ classdef Sid_Processing
                 Sid_Processing.IP.mat_img_wn{j} = temp;
                 Sid_Processing.IP.ssim_wn(j) = ssim(temp,temp2);
             end
-            [~,xPeaks] = findpeaks(Sid_Processing.IP.ssim_wn, Sid_Processing.wn, 'SortStr','descend');
+
+            %TODO : voir pq parfois il arrive ssim de 1024 ele et wn de
+            %512.
+            if (length(Sid_Processing.IP.ssim_wn) > length(Sid_Processing.wn))
+                Sid_Processing.IP.ssim_wn=Sid_Processing.IP.ssim_wn(1:length(Sid_Processing.wn));
+            end
+            if (length(Sid_Processing.IP.ssim_wn) < length(Sid_Processing.wn))
+                Sid_Processing.wn=Sid_Processing.wn(1:length(Sid_Processing.IP.ssim_wn));
+            end
+            [yPeaks,xPeaks] = findpeaks(Sid_Processing.IP.ssim_wn, Sid_Processing.wn, 'SortStr','descend','MinPeakDistance',15);
             if (size(xPeaks) ~= 0)
-               Sid_Processing.wns_plot = [xPeaks(1) xPeaks(2) xPeaks(3)];
+               Sid_Processing.wns_plot = [xPeaks(1) xPeaks(2) xPeaks(3) xPeaks(4) xPeaks(5)];
+               Sid_Processing.IP.peaks_ssim = [yPeaks(1) yPeaks(2) yPeaks(3) yPeaks(4) yPeaks(5)];
             else
-               Sid_Processing.IP.peaks_ssim_wn = [0 0 0];
+               Sid_Processing.IP.peaks_ssim_wn = [0 0 0 0 0];
             end
             
             %Here it takes the indices for the plot
@@ -386,16 +416,6 @@ classdef Sid_Processing
             Sid_Processing.ramanSpectrumWithMask = Sid_Processing.ramanSpectrumWithMask(1:ceil(length(hyperspectralRamanImageComplexFiltered)/2));
            
         end
-
-        
-        % function Sid_Processing = put_parameters(Sid_Processing, tukey_param, ratio, window_name, dead)
-        %     % Set the properties using the input arguments
-        %     Sid_Processing.DCopt = 1;
-        %     Sid_Processing.tukey_window_param = tukey_param;
-        %     Sid_Processing.ratio_window = ratio;
-        %     Sid_Processing.window2_name = window_name;
-        %     Sid_Processing.deadtime = dead;
-        % end
 
         % Deep copy method for SP class        
         function newSP = copy(obj)           

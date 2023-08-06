@@ -17,10 +17,29 @@ classdef Image_Processing
     end
     
     methods
-
+        %AVG FILTER
         function [imag_filtered] = average_filter(~, imag_raw, hsize) % >1 ok!
             imag_filtered = imfilter(imag_raw,fspecial('average', hsize));
         end
+        function [best_img_filtered] = get_best_img_avg_filter(~,SP, imag_raw)           
+            best_ssim_temp = -1; 
+            best_i = 1;
+            best_j = 1;
+            for i=1:25
+                for j = 1:25
+                    img_filtered_temp = SP.IP.average_filter(imag_raw, [i j]);
+                    ssim_temp = ssim(img_filtered_temp,matrix_img_ref);
+                    if (ssim_temp > best_ssim_temp)
+                        best_ssim_temp = ssim_temp;
+                        best_i = i;
+                        best_j = j;
+                        best_img_filtered = img_filtered_temp;
+                    end
+                end
+            end
+        end
+
+
         function [imag_filtered] = gaussian1_filter(~, imag_raw, hsize,sigma) % hsize > 1 et sigma > 0 ok!
             imag_filtered = imfilter(imag_raw,fspecial('gaussian', hsize, sigma));
         end
@@ -49,9 +68,24 @@ classdef Image_Processing
         function [imag_filtered] = wiener2_filter(~, imag_raw, m, n) %ok
             [imag_filtered,~] = wiener2(imag_raw,[m n]);
         end
+
         function [imag_filtered] = gaussian2_filter(~, imag_raw, sigma_m ,sigma_n ) %sigma > 0 OK!
             imag_filtered = imgaussfilt(imag_raw, [sigma_m sigma_n]);
         end
+        function [best_img_filtered] = get_best_img_gauss2_filter(~,SP, imag_raw)  
+            best_ssim_temp = -1;
+            for i=0.1:0.05:3
+                for j = 0.1:0.05:3
+                    img_filtered_temp = SP.IP.gaussian2_filter(imag_raw, i, j);
+                    ssim_temp = ssim(img_filtered_temp,SP.IP.mat_ref);
+                    if (ssim_temp > best_ssim_temp)
+                        best_ssim_temp = ssim_temp;
+                        best_img_filtered = img_filtered_temp;
+                    end
+                end
+            end
+        end
+
         function [imag_filtered] = mode_filter(~, imag_raw, size) %size = vector of positive odd integers
             imag_filtered = modefilt(imag_raw, size); %OK !
         end

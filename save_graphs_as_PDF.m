@@ -84,10 +84,10 @@ function save_graphs_as_PDF(SP)
     han.Position(1) = han.Position(1) - abs(han.Position(1) * 0.8); %horizontal indent
     
     if exist('test.pdf', 'file')
-            %print(h1,append('Exp_', string(SP.xp_number)),'-dpdf', '-bestfit')
-            exportgraphics(h1,'test.pdf',"Append",true)
+            exportgraphics(h1,'test.pdf',"Append",true, 'BackgroundColor','none');
     else
-            print(h1,'test.pdf','-dpdf', '-bestfit')
+            exportgraphics(h1,'test.pdf', 'BackgroundColor','none');
+            %print(h1,'test.pdf','-dpdf', '-bestfit')
     end
 
 end

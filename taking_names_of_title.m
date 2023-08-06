@@ -45,10 +45,7 @@ SP=Sid_Processing();
 SP.DCopt=1;
 % Choose the experiment, and load all the data from the correct folders
 for i=1:numel(names)/5
-    i
-    tic
     SP=SP.choose_folders_load_data(i); %1,2,3,..
-    toc
     SP.ratio_window = get_best_ratio_window(SP, 0.1, 0.9);
     SP.tukey_window_param = 1;
     SP.deadtime=74;

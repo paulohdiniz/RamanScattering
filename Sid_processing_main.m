@@ -1,11 +1,8 @@
 close all
 clear variables 
 cd('/Users/paulohd/Desktop/PauloDiniz')
-%addpath(genpath('/Users/paulohd/Desktop/PauloDiniz'))
 addpath('/Users/paulohd/Desktop/PauloDiniz')
-% cd('/Users/paulohd/Documents/Data_SID/210507')
-% addpath(genpath('/Users/paulohd/Documents/Data_SID/210507'))
-% addpath('/Users/paulohd/Documents/Data_SID/210507')
+
 %% CODE FOR USING THE CLASS THAT MAKES THE SAME THING AS SID'S CODE
 
 % We generate the class
@@ -13,7 +10,7 @@ SP=Sid_Processing();
 SP.DCopt=1;
 
 % Choose the experiment, and load all the data from the correct folders
-SP=SP.choose_folders_load_data(3); %1,2,3
+SP=SP.choose_folders_load_data(2); %1,2,3
 
 % Put the parameters
 SP.ratio_window = 0.442;
@@ -41,19 +38,20 @@ SP = SP.points_to_plot_by_ssim();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%plot_graphs(SP);
+%(5 seconds)
+plot_graphs(SP);
 
-plot_graphs_with_filter(SP);
+%(20 seconds)
+%plot_graphs_with_filter(SP);
 
-% plot_graphs_with_mask(SP);
+%(5 seconds)
+%plot_graphs_with_mask(SP);
 
-
-%x = get_best_ratio_window(SP, 0.4, 0.9);
+%(1 minute)
+%x = get_best_ratio_window(SP, 0.2, 0.9);
 
 %Save the txt with the results of filters (9 minutes).
 % get_best_filter(SP);
 
-
+%(12 seconds)
 %save_graphs_as_PDF(SP);
-%montage({SP.IP.mat_ref,SP.IP.pick_filter(1, SP.IP.mat_img_wn{SP.pixels_plot(1)})})
-

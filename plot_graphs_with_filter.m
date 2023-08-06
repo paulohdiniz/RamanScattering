@@ -1,25 +1,9 @@
 function plot_graphs_with_filter(SP)
-
+    matrix_img_ref = SP.IP.mat_ref;
     for k = 1:3
-        matrix_img_ref = SP.IP.mat_ref;
         temp = SP.IP.mat_img_wn{SP.pixels_plot(k)};
-        best_ssim_temp = -1;
-        best_i = 1;
-        best_j = 1;
-            for i=0.1:0.05:3
-                for j = 0.1:0.05:3
-                    img_filtered_temp = SP.IP.gaussian2_filter(temp, i, j);
-                    ssim_temp = ssim(img_filtered_temp,matrix_img_ref);
-                    if (ssim_temp > best_ssim_temp)
-                        best_ssim_temp = ssim_temp;
-                        best_i = i;
-                        best_j = j;
-                    end
-                end
-            end
-        images(k).image_filtre = ...
-        SP.IP.gaussian2_filter(temp, best_i, best_j);
-        ssimim(k).imag_filtre = ssim(images(k).image_filtre,matrix_img_ref);
+        images(k).img_filtre = SP.IP.get_best_img_gauss2_filter(SP, temp);
+        ssimim(k).img_filtre = ssim(images(k).img_filtre,matrix_img_ref);
     end
 
 
@@ -58,34 +42,34 @@ function plot_graphs_with_filter(SP)
     text(-0.1, 1.1,'c','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',14)
 
     subplot(2,3,4);
-    imagesc(images(1).image_filtre);
+    imagesc(images(1).img_filtre);
     xlabel('pixels');
     ylabel('pixels');
     colorbar;
     title({
         ['Image at ' num2str(SP.wn(SP.pixels_plot(1))) 'cm^{-1}'] 
-        [ 'SSIM(filtered): ' num2str(ssimim(1).imag_filtre)]
+        [ 'SSIM(filtered): ' num2str(ssimim(1).img_filtre)]
         });
     colormap('hot')
     
     subplot(2,3,5);
-    imagesc(images(2).image_filtre);
+    imagesc(images(2).img_filtre);
     xlabel('pixels');
     ylabel('pixels');
     colorbar;
     title({
         ['Image at ' num2str(SP.wn(SP.pixels_plot(2))) 'cm^{-1}'] 
-        [ 'SSIM(filtered): ' num2str(ssimim(2).imag_filtre)]
+        [ 'SSIM(filtered): ' num2str(ssimim(2).img_filtre)]
         });
     
     subplot(2,3,6);
-    imagesc(images(3).image_filtre);
+    imagesc(images(3).img_filtre);
     xlabel('pixels');
     ylabel('pixels');
     colorbar;
     title({
         ['Image at ' num2str(SP.wn(SP.pixels_plot(3))) 'cm^{-1}'] 
-        [ 'SSIM(filtered): ' num2str(ssimim(3).imag_filtre)]
+        [ 'SSIM(filtered): ' num2str(ssimim(3).img_filtre)]
         });
     
     %Putting Parameters

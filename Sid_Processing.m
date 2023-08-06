@@ -36,6 +36,11 @@ classdef Sid_Processing
         list_of_delays
         function_generator
         lockin_parameters
+        objectives
+        labview_parameters
+        laser_parameters
+        dazzler_beta2
+        polariser_orientation
 
         % interpolation
         data_stitched
@@ -81,10 +86,14 @@ classdef Sid_Processing
                 psdelay = string(regexp(names_for_dir{(xp_number-1)*5 +i}, '_([0-9]+)psdelay', 'tokens')); % match prendre tout
                 Sid_Processing.list_of_delays(i).delay = psdelay;
             end
-                Sid_Processing.function_generator = string(regexp(names_for_dir{(xp_number-1)*5 +1}, 'FG_([0-9]+)MHZ', 'match'));
-                Sid_Processing.lockin_parameters = string(regexp(names_for_dir{(xp_number-1)*5 +1}, 'APE([\w]+)ns', 'match'));
-                %TO DO: put more variables...
-
+                Sid_Processing.function_generator = string(regexp(names_for_dir{(xp_number-1)*5 +1}, 'FG_([0-9]+)MHZ', 'match', 'once'));
+                Sid_Processing.lockin_parameters = string(regexp(names_for_dir{(xp_number-1)*5 +1}, 'APE([\w]+)ns', 'match', 'once'));
+                Sid_Processing.objectives = string(regexp(names_for_dir{(xp_number-1)*5 +1}, 'Nik[^_]*(?=_)', 'match', 'once'));
+                Sid_Processing.labview_parameters = string(regexp(names_for_dir{(xp_number-1)*5 +1}, '\d*_acc\w*(?=_\d*mW_TiSa)', 'match', 'once'));
+                Sid_Processing.laser_parameters = string(regexp(names_for_dir{(xp_number-1)*5 +1}, '\d*mW_TiSa_\d*mW_OPO\d*(?=_)', 'match', 'once'));
+                Sid_Processing.dazzler_beta2 = string(regexp(names_for_dir{(xp_number-1)*5 +1}, 'Dazz\w*minus(.*?)(?=_)', 'match', 'once'));
+                Sid_Processing.polariser_orientation = string(regexp(names_for_dir{(xp_number-1)*5 +1}, '_([A-Za-z0-9]*QWP\w*?)(?=_([0-9]+)psdelay)', 'tokens', 'once'));
+              
             names=cellfun(@(x) x(9:145),{folder_content(:).name},'UniformOutput',false);
             for ii=1:length(names)
                 bla=strcmp(names{i_0},names{ii});

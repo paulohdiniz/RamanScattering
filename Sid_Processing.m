@@ -12,9 +12,12 @@ classdef Sid_Processing
         stitch = 1;
         DCopt = 1;
         SHGOpt =0;
+        Max_wn = 250;
+
         % Path parameters
-        Data_path= cd;
+        Data_path= pwd;
         xp_number;
+
         % Data parameters
         ScanRange
         Clock_Freq
@@ -81,32 +84,42 @@ classdef Sid_Processing
             i_0=1;
 
             %Taking parameters of title
-            names_for_dir=cellfun(@(x) x(1:numel(x)),{folder_content(:).name},'UniformOutput',false);
+            full_name_folders=cellfun(@(x) x(1:numel(x)),{folder_content(:).name},'UniformOutput',false);
             for i=1:5
-                psdelay = string(regexp(names_for_dir{(xp_number-1)*5 +i}, '_([0-9]+)psdelay', 'tokens')); % match prendre tout
+                psdelay = string(regexp(full_name_folders{(xp_number-1)*5 +i}, '_([0-9]+)psdelay', 'tokens')); % match prendre tout
                 Sid_Processing.list_of_delays(i).delay = psdelay;
             end
-                Sid_Processing.function_generator = string(regexp(names_for_dir{(xp_number-1)*5 +1}, 'FG_([0-9]+)MHZ', 'match', 'once'));
-                Sid_Processing.lockin_parameters = string(regexp(names_for_dir{(xp_number-1)*5 +1}, 'APE([\w]+)ns', 'match', 'once'));
-                Sid_Processing.objectives = string(regexp(names_for_dir{(xp_number-1)*5 +1}, 'Nik[^_]*(?=_)', 'match', 'once'));
-                Sid_Processing.labview_parameters = string(regexp(names_for_dir{(xp_number-1)*5 +1}, '\d*_acc\w*(?=_\d*mW_TiSa)', 'match', 'once'));
-                Sid_Processing.laser_parameters = string(regexp(names_for_dir{(xp_number-1)*5 +1}, '\d*mW_TiSa_\d*mW_OPO\d*(?=_)', 'match', 'once'));
-                Sid_Processing.dazzler_beta2 = string(regexp(names_for_dir{(xp_number-1)*5 +1}, 'Dazz\w*minus(.*?)(?=_)', 'match', 'once'));
-                Sid_Processing.polariser_orientation = string(regexp(names_for_dir{(xp_number-1)*5 +1}, '_([A-Za-z0-9]*QWP\w*?)(?=_([0-9]+)psdelay)', 'tokens', 'once'));
+                Sid_Processing.function_generator = string(regexp(full_name_folders{(xp_number-1)*5 +1}, 'FG_([0-9]+)MHZ', 'match', 'once'));
+                Sid_Processing.lockin_parameters = string(regexp(full_name_folders{(xp_number-1)*5 +1}, 'APE([\w]+)ns', 'match', 'once'));
+                Sid_Processing.objectives = string(regexp(full_name_folders{(xp_number-1)*5 +1}, 'Nik[^_]*(?=_)', 'match', 'once'));
+                Sid_Processing.labview_parameters = string(regexp(full_name_folders{(xp_number-1)*5 +1}, '\d*_acc\w*(?=_\d*mW_TiSa)', 'match', 'once'));
+                Sid_Processing.laser_parameters = string(regexp(full_name_folders{(xp_number-1)*5 +1}, '\d*mW_TiSa_\d*mW_OPO\d*(?=_)', 'match', 'once'));
+                Sid_Processing.dazzler_beta2 = string(regexp(full_name_folders{(xp_number-1)*5 +1}, 'Dazz\w*minus(.*?)(?=_)', 'match', 'once'));
+                Sid_Processing.polariser_orientation = string(regexp(full_name_folders{(xp_number-1)*5 +1}, '_([A-Za-z0-9]*QWP\w*?)(?=_([0-9]+)psdelay)', 'tokens', 'once'));
               
             names=cellfun(@(x) x(9:145),{folder_content(:).name},'UniformOutput',false);
-            for ii=1:length(names)
-                bla=strcmp(names{i_0},names{ii});
-                if bla
-                    indice(pp,ii)=ii;
-                else
-                    pp=pp+1;
-                    i_0=ii;
-                    indice(pp,ii)=ii;
-                end
-            end
-            Sid_Processing.folders=folder_content(indice(xp_number,indice(xp_number,:)~=0));
-            
+            % % Supprimer la partie finale des éléments de names
+            % for i = 1:numel(names)
+            %     match = regexp(names{i}, '_([0-9]+)psdelay', 'match');
+            %     if ~isempty(match)
+            %         names{i} = strrep(names{i}, match, '');
+            %     end
+            % end
+            %TO DO: todos parametros iguais muda o final, para uma serie de exp, o
+            %q signifca???
+            % for ii=1:length(names)
+            %     bla=strcmp(names{i_0},names{ii});
+            %     if bla
+            %         indice(pp,ii)=ii;
+            %     else
+            %         pp=pp+1;
+            %         i_0=ii;
+            %         indice(pp,ii)=ii;
+            %     end
+            % end
+            %Sid_Processing.folders=folder_content(indice(xp_number,indice(xp_number,:)~=0));
+            Sid_Processing.folders= folder_content((xp_number-1)*5 +[1 2 3 4 5]);
+     
             %Load Data and Parameters
             for tt=1:length(Sid_Processing.folders)
                 cd(Sid_Processing.folders(tt).name)
@@ -190,6 +203,15 @@ classdef Sid_Processing
 
             t_stitch=[cell2mat({temp_data4D.t})];
             data_R_stitch=permute(cell2mat(cellfun(@(x) permute(x,[2 1 3]),{temp_data4D.data_R},'UniformOutput',false)),[1 3 2]);
+            
+            % Supprimer les valeurs répétées de t_stitch
+            % [unique_t, unique_indices] = unique(t_stitch);
+            % data_R_unique = data_R_stitch(:, :, unique_indices);
+            % 
+            % % Mettre à jour les variables
+            % t_stitch = unique_t;
+            % data_R_stitch = data_R_unique;
+            
             % Interpolate
             t_ini=repmat(time_axis,1,size(Sid_Processing.delays,2));
             t_ini=t_ini+repelem(Sid_Processing.delays,264)*1e-12;
@@ -377,7 +399,7 @@ classdef Sid_Processing
             % end
         end
 
-        function Sid_Processing=points_to_plot_by_ssim(Sid_Processing)
+        function Sid_Processing=calculated_ssim_per_wn(Sid_Processing)
 
             %Reference image
             temp2=squeeze(mean((Sid_Processing.data_processed(1).data_T),[1]));
@@ -399,18 +421,74 @@ classdef Sid_Processing
             if (length(Sid_Processing.IP.ssim_wn) < length(Sid_Processing.wn))
                 Sid_Processing.wn=Sid_Processing.wn(1:length(Sid_Processing.IP.ssim_wn));
             end
-            [yPeaks,xPeaks] = findpeaks(Sid_Processing.IP.ssim_wn, Sid_Processing.wn, 'SortStr','descend','MinPeakDistance',15);
-            if (size(xPeaks) ~= 0)
-               Sid_Processing.wns_plot = [xPeaks(1) xPeaks(2) xPeaks(3) xPeaks(4) xPeaks(5)];
-               Sid_Processing.IP.peaks_ssim = [yPeaks(1) yPeaks(2) yPeaks(3) yPeaks(4) yPeaks(5)];
-            else
-               Sid_Processing.IP.peaks_ssim_wn = [0 0 0 0 0];
-            end
+
+        end
+
+        function Sid_Processing=points_to_plot_by_ssim(Sid_Processing)
+
+            temp=Sid_Processing.IP.ssim_wn;
             
+            wn_temp=Sid_Processing.wn(Sid_Processing.wn<250);
+            temp=(temp(Sid_Processing.wn<250));
+            
+            wn_temp2=wn_temp(wn_temp>4);
+            temp=(temp(wn_temp>4));
+
+
+            [yPeaks,xPeaks] = findpeaks(temp,wn_temp2,'SortStr','descend','MinPeakHeight',0.05,'MinPeakDistance',2,'MinPeakProminence',0.02);
+            
+            if numel(xPeaks) ~= 0
+                Sid_Processing.wns_plot = zeros(1, numel(xPeaks));
+                Sid_Processing.IP.peaks_ssim = zeros(1, numel(yPeaks));
+                for i = 1:numel(xPeaks)
+                    Sid_Processing.wns_plot(i) = xPeaks(i);
+                    Sid_Processing.IP.peaks_ssim(i) = yPeaks(i);
+                end
+            else
+                Sid_Processing.IP.peaks_ssim_wn = [0 0 0];
+            end
+
             %Here it takes the indices for the plot
             for i=1:size(Sid_Processing.wns_plot,2)
                 Sid_Processing.pixels_plot(i) = find(abs(Sid_Processing.wn-Sid_Processing.wns_plot(i))==min(abs(Sid_Processing.wn-Sid_Processing.wns_plot(i))));
             end
+
+            if(size(Sid_Processing.wns_plot) ==2)
+                Sid_Processing.pixels_plot(3) = Sid_Processing.pixels_plot(2);
+            end
+                       
+            if(size(Sid_Processing.wns_plot) ==1)
+                Sid_Processing.pixels_plot(2) = Sid_Processing.pixels_plot(1);
+                Sid_Processing.pixels_plot(3) = Sid_Processing.pixels_plot(1);
+            end
+        end
+
+        function Sid_Processing=points_to_plot_by_frequency(Sid_Processing)
+
+            
+            temp=Sid_Processing.ramanSpectrum;
+            temp=temp./max(temp(:));
+            
+            wn_temp=Sid_Processing.wn(Sid_Processing.wn<250);
+            temp=(temp(Sid_Processing.wn<250));
+            
+            wn_temp2=wn_temp(wn_temp>4);
+            temp=(temp(wn_temp>4));
+            
+            %Here it takes the values of the 3 biggest peaks and saves it in the wns_plot variable to plot later
+            [yPeaks,xPeaks,k,prm] = findpeaks(temp,wn_temp2,'SortStr','descend','MinPeakHeight',0.05,'MinPeakDistance',2,'MinPeakProminence',0.02);
+            [~,i] = sort(prm,'descend');
+             if (size(xPeaks) ~= 0)
+                 Sid_Processing.wns_plot=[xPeaks(1) xPeaks(2) xPeaks(3)];
+             else
+                 Sid_Processing.wns_plot=[0 0 0];
+             end
+
+            %Here it takes the indices for the plot
+            for i=1:size(Sid_Processing.wns_plot,2)
+                Sid_Processing.pixels_plot(i) = find(abs(Sid_Processing.wn-Sid_Processing.wns_plot(i))==min(abs(Sid_Processing.wn-Sid_Processing.wns_plot(i))));
+            end
+
         end
 
         function Sid_Processing=make_raman_spectrum_with_mask(Sid_Processing, mask)

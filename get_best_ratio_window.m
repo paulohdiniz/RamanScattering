@@ -55,7 +55,7 @@ function best_ratio = get_best_ratio_window(SPtemp, ratio_init, ratio_fin)
     best_ratio_temp = SP(best_indice).ratio_window;
     decimals_string = char( extractAfter( string(best_ratio_temp),'.') );
     n = length(decimals_string);
-    if (n >= 3 || best_ratio_temp == 1 || best_ratio_temp ==0 || step <= 0.0001)
+    if (n >= 2 || best_ratio_temp == 1 || best_ratio_temp ==0 || step <= 0.0001)
         fprintf('The best ratio window is %s.\n',string(best_ratio_temp))
         best_ratio = best_ratio_temp;
     else
@@ -67,7 +67,6 @@ function best_ratio = get_best_ratio_window(SPtemp, ratio_init, ratio_fin)
             ratio_fin = best_ratio_temp + step;
         end
         best_ratio = get_best_ratio_window(SPtemp, ratio_init, ratio_fin);
-        %voir encore medfilt2, chercher wiener etc... avant de faire la comparaison
     end
 end
 

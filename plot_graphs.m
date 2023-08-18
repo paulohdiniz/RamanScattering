@@ -17,15 +17,17 @@ function plot_graphs(SP)
 
     subplot(2,3,2);
     plot(SP.wn,SP.ramanSpectrum);
+    hold on,plot(SP.wns_plot,SP.ramanSpectrum(SP.pixels_plot),'ro')
     xlabel('Wavenumbers [cm^{-1}]','fontsize',14);
     ylabel('Raman Spectrum','fontsize',14);
     xlim([0,160])
     title('Integrated Raman Spectrum','fontsize',14)
     text(-0.1,1.1,'b','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',14)
-    set(gca,'ytick',[]);
+    %set(gca,'ytick',[]);
 
     subplot(2,3,3);
     imagesc(squeeze(mean((SP.data_processed(1).data_T),[1])));
+    axis image
     title('DC PD signal','fontsize',14); 
     xlabel('pixels','interpreter','tex');
     ylabel('pixels');
@@ -41,7 +43,7 @@ function plot_graphs(SP)
     colorbar;
     title({
         ['Image at ' num2str(SP.wn(SP.pixels_plot(1))) 'cm^{-1}'] 
-        [ 'SSIM: ' num2str(SP.IP.peaks_ssim(1))]
+        [ 'SSIM: ' num2str(SP.IP.ssim_wn(SP.pixels_plot(1)))]
         });
     colormap('hot')
     
@@ -52,7 +54,7 @@ function plot_graphs(SP)
     colorbar;
     title({
         ['Image at ' num2str(SP.wn(SP.pixels_plot(2))) 'cm^{-1}'] 
-        [ 'SSIM: ' num2str(SP.IP.peaks_ssim(2))]
+        [ 'SSIM: ' num2str(SP.IP.ssim_wn(SP.pixels_plot(2)))]
         });
     
     subplot(2,3,6);
@@ -62,7 +64,7 @@ function plot_graphs(SP)
     colorbar;
     title({
         ['Image at ' num2str(SP.wn(SP.pixels_plot(3))) 'cm^{-1}'] 
-        [ 'SSIM: ' num2str(SP.IP.peaks_ssim(3))]
+        [ 'SSIM: ' num2str(SP.IP.ssim_wn(SP.pixels_plot(3)))]
         });
     
     %Putting Parameters

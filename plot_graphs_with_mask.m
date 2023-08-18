@@ -16,6 +16,7 @@ function plot_graphs_with_mask(SP)
 
     subplot(2,3,2);
     plot(SP.wn,SP.ramanSpectrum);
+    hold on,plot(SP.wns_plot,SP.ramanSpectrum(SP.pixels_plot),'ro')
     xlabel('Wavenumbers [cm^{-1}]','fontsize',14);
     ylabel('Raman Spectrum','fontsize',14);
     xlim([0,160])

@@ -10,7 +10,7 @@ SP=Sid_Processing();
 SP.DCopt=1;
 
 % Choose the experiment, and load all the data from the correct folders
-SP=SP.choose_folders_load_data(2); %1,2,3
+SP=SP.choose_folders_load_data(3); %1,2,3
 
 % Put the parameters
 SP.ratio_window = 0.442;
@@ -34,7 +34,11 @@ SP = SP.FT(SP.data_stitched.t_stitched, permute(SP.data_stitched.data_R,[3 1 2])
 
 SP = SP.make_raman_spectrum();
 
-SP = SP.points_to_plot_by_ssim();
+SP = SP.calculated_ssim_per_wn();
+
+%Criteria ssym or frequency to find peaks
+%SP = SP.points_to_plot_by_ssim();
+SP = SP.points_to_plot_by_frequency();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -50,8 +54,8 @@ plot_graphs(SP);
 %(1 minute)
 %x = get_best_ratio_window(SP, 0.2, 0.9);
 
-%Save the txt with the results of filters (9 minutes).
-% get_best_filter(SP);
+%Save the txt with the results of filters (30 sec).
+%get_best_filter(SP);
 
 %(12 seconds)
 %save_graphs_as_PDF(SP);

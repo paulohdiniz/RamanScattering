@@ -16,6 +16,7 @@ function save_graphs_as_PDF(SP)
 
     subplot(2,3,2);
     plot(SP.wn,SP.ramanSpectrum);
+    hold on,plot(SP.wns_plot,SP.ramanSpectrum(SP.pixels_plot),'ro')
     xlabel('Wavenumbers [cm^{-1}]','fontsize',14);
     ylabel('Raman Spectrum','fontsize',14);
     xlim([0,160])
@@ -40,7 +41,7 @@ function save_graphs_as_PDF(SP)
     colorbar;
     title({
         ['Image at ' num2str(SP.wn(SP.pixels_plot(1))) 'cm^{-1}'] 
-        [ 'SSIM: ' num2str(SP.IP.peaks_ssim(1))]
+        [ 'SSIM: ' num2str(SP.IP.ssim_wn(SP.pixels_plot(1)))]
         });
     colormap('hot')
     
@@ -51,7 +52,7 @@ function save_graphs_as_PDF(SP)
     colorbar;
     title({
         ['Image at ' num2str(SP.wn(SP.pixels_plot(2))) 'cm^{-1}'] 
-        [ 'SSIM: ' num2str(SP.IP.peaks_ssim(2))]
+        [ 'SSIM: ' num2str(SP.IP.ssim_wn(SP.pixels_plot(2)))]
         });
     
     subplot(2,3,6);
@@ -61,9 +62,9 @@ function save_graphs_as_PDF(SP)
     colorbar;
     title({
         ['Image at ' num2str(SP.wn(SP.pixels_plot(3))) 'cm^{-1}'] 
-        [ 'SSIM: ' num2str(SP.IP.peaks_ssim(3))]
+        [ 'SSIM: ' num2str(SP.IP.ssim_wn(SP.pixels_plot(3)))]
         });
-
+    
     %Putting Parameters
     han=axes(h1,'visible','off'); 
     han.YLabel.Visible='on';

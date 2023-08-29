@@ -34,7 +34,8 @@ function plot_graphs_with_filter(SP)
 
     subplot(2,3,3);
     imagesc(squeeze(mean((SP.data_processed(1).data_T),[1])));
-    title('DC PD signal','fontsize',14); 
+    title('DC PD signal','fontsize',14);
+    axis image
     xlabel('pixels','interpreter','tex');
     ylabel('pixels');
     axis image
@@ -44,6 +45,7 @@ function plot_graphs_with_filter(SP)
 
     subplot(2,3,4);
     imagesc(images(1).img_filtre);
+    axis image
     xlabel('pixels');
     ylabel('pixels');
     colorbar;
@@ -55,6 +57,7 @@ function plot_graphs_with_filter(SP)
     
     subplot(2,3,5);
     imagesc(images(2).img_filtre);
+    axis image
     xlabel('pixels');
     ylabel('pixels');
     colorbar;
@@ -65,6 +68,7 @@ function plot_graphs_with_filter(SP)
     
     subplot(2,3,6);
     imagesc(images(3).img_filtre);
+    axis image
     xlabel('pixels');
     ylabel('pixels');
     colorbar;
@@ -92,7 +96,7 @@ function plot_graphs_with_filter(SP)
         'fontsize',10, ...
         'HorizontalAlignment','left', ...
         'VerticalAlignment','bottom');
-    han.Position(1) = han.Position(1) - abs(han.Position(1) * 0.8); %horizontal indent
-    
+    han.Position(1) = han.Position(1) - abs(han.Position(1) * 0.85); %horizontal indent
+    han.Position(2) = han.Position(2) - abs(han.Position(2) * 1); %vertical indent
 end
 

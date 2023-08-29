@@ -36,6 +36,7 @@ function save_graphs_as_PDF(SP)
 
     subplot(2,3,4);
     imagesc(squeeze(abs(SP.hyperspectralRamanImageComplex(SP.pixels_plot(1),:,:))));
+    axis image
     xlabel('pixels');
     ylabel('pixels');
     colorbar;
@@ -47,6 +48,7 @@ function save_graphs_as_PDF(SP)
     
     subplot(2,3,5);
     imagesc(squeeze(abs(SP.hyperspectralRamanImageComplex(SP.pixels_plot(2),:,:))));
+    axis image
     xlabel('pixels');
     ylabel('pixels');
     colorbar;
@@ -57,6 +59,7 @@ function save_graphs_as_PDF(SP)
     
     subplot(2,3,6);
     imagesc(squeeze(abs(SP.hyperspectralRamanImageComplex(SP.pixels_plot(3),:,:))));
+    axis image
     xlabel('pixels');
     ylabel('pixels');
     colorbar;
@@ -83,11 +86,15 @@ function save_graphs_as_PDF(SP)
         'HorizontalAlignment','left', ...
         'VerticalAlignment','bottom');
     han.Position(1) = han.Position(1) - abs(han.Position(1) * 0.8); %horizontal indent
-    
-    if exist('test.pdf', 'file')
-            exportgraphics(h1,'test.pdf',"Append",true, 'BackgroundColor','none');
+
+    if (isempty(SP.name_pdf))
+        SP.name_pdf = string(SP.xp_number);
+    end
+
+    if exist(append(SP.name_pdf,'.pdf'), 'file')
+            exportgraphics(h1,append(SP.name_pdf,'.pdf'),"Append",true, 'BackgroundColor','none');
     else
-            exportgraphics(h1,'test.pdf', 'BackgroundColor','none');
+            exportgraphics(h1,append(SP.name_pdf,'.pdf'), 'BackgroundColor','none');
             %print(h1,'test.pdf','-dpdf', '-bestfit')
     end
 

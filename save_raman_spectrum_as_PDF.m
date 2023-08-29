@@ -1,7 +1,7 @@
-function plot_graphs(SP)
+function save_raman_spectrum_as_PDF(SP)
 
     name_of_figure = append('Exp : ', string(SP.xp_number));
-    h1 = figure('Position', [50 100 1300 1000],'Name', name_of_figure);
+    h1 = figure('Position', [50 100 900 700], 'visible','off','Name', name_of_figure);
     
     subplot(6,3,[1,2,4,5,7,8]);
 
@@ -10,7 +10,7 @@ function plot_graphs(SP)
 
     signal_windowed = signal_norm.*SP.window2.';
     
-    hold on, plot(SP.data_stitched.t_stitched(:)*1E12,signal_windowed, 'Color', 'blue',LineWidth=1.5);
+    hold on, plot(SP.data_stitched.t_stitched(:)*1E12,signal_windowed, 'Color', 'blue',LineWidth=1);
     hold on, plot(SP.data_stitched.t_stitched(:)*1E12,signal_norm,"--", 'Color', '#006400',LineWidth=1);
     hold on, plot(SP.data_stitched.t_stitched(:)*1E12, SP.window2, "--",'Color', 'red',LineWidth=2);
     hold off
@@ -90,5 +90,16 @@ function plot_graphs(SP)
         'HorizontalAlignment','left', ...
         'VerticalAlignment','bottom');
     han.Position(1) = han.Position(1) - abs(han.Position(1) * 0.8); %horizontal indent
-end
 
+    if (isempty(SP.name_pdf))
+        SP.name_pdf = string(SP.xp_number);
+    end
+
+    if exist(append(SP.name_pdf,'_raman','.pdf'), 'file')
+            exportgraphics(h1,append(SP.name_pdf,'_raman','.pdf'),"Append",true, 'BackgroundColor','none');
+    else
+            exportgraphics(h1,append(SP.name_pdf,'_raman','.pdf'), 'BackgroundColor','none');
+            %print(h1,'test.pdf','-dpdf', '-bestfit')
+    end
+
+end

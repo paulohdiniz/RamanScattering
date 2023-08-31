@@ -18,23 +18,22 @@ function plot_spectrogram(SP)
     % figure,imagesc(w,t,10*log10(abs(s)).')
     % figure,waterplot(s,w,t)
     
-    for M=500:10:1000
-    % M = 510; %223
-    % L= 400;
-        for L=M-30:M-1
+    %for M=100:10:512
+    M = 510; %223
+    L= 500;
+        %for L=10:10:500
             if (L < M)
-                [M L 2^nextpow2(M)]
                 g = hamming(M); 
                 %L = 111;    %111
-                Ndft = max(1024,2^nextpow2(M));
+                Ndft = max(256,2^nextpow2(M));
                 [s,f,t] = spectrogram(temp_data,g,L,Ndft,SP.Fs);
                 waterplot(s,f,t),            
                 pause(0.1)
                 % close gcf,
             end
-        end
+        %end
 
-    end
+    %end
 
     %Compare spectrogram Function and STFT Definition
     
@@ -63,7 +62,7 @@ function plot_spectrogram(SP)
     function waterplot(s,f,t)
     % Waterfall plot of spectrogram
         x =waterfall(f,t,abs(s)'.^2);
-        set(gca,XDir="reverse",View=[30 50], XLim=[0 0.5e13])
+        set(gca,XDir="reverse",View=[30 50], XLim=0.1)
         xlabel("Frequency")
         ylabel("Time")
     end

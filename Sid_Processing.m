@@ -64,6 +64,9 @@ classdef Sid_Processing
         ramanSpectrum
         ramanSpectrumWithMask
 
+        %Parameters of FFT and spectrogram
+        Fs %sampling frequency
+
         %Properties of Raman Spectrum
         peakAmpli
         peakAmpli_wn
@@ -401,18 +404,24 @@ classdef Sid_Processing
 
         %Fourier transform
         function Sid_Processing=FT(Sid_Processing, time_vec, Data_vec)
-            dt = diff(time_vec);
-            dt = dt(1:end-1);
-            dt = mean(abs(dt));
-            Fs = 1/dt;
+            Sid_Processing=SamplingFrequency(Sid_Processing,time_vec);
+
             NFFT = 2^(nextpow2(size(Data_vec,1))+1);
     
             ReducedMeanSignal = bsxfun(@minus,Data_vec,mean(Data_vec,1));
-            Y = dt*(fft(ReducedMeanSignal,NFFT,1));
-            F = (((0:1/NFFT:1-1/NFFT)*Fs).');
-            Sid_Processing.wn = fftshift(F-Fs/2);
+            Y = (1/Sid_Processing.Fs)*(fft(ReducedMeanSignal,NFFT,1));
+            varTEMP = fft(ReducedMeanSignal,NFFT,1); %TODO:TEST
+            F = (((0:1/NFFT:1-1/NFFT)*Sid_Processing.Fs).');
+            Sid_Processing.wn = fftshift(F-Sid_Processing.Fs/2);
             Sid_Processing.wn = Sid_Processing.wn(1:ceil(length(Sid_Processing.wn)/2))/3e8/100; %remove the negatives and put them in the unit cm^-1
             Sid_Processing.hyperspectralRamanImageComplex = Y;
+        end
+
+        function Sid_Processing=SamplingFrequency(Sid_Processing, time_vec)
+            dt = diff(time_vec);
+            dt = dt(1:end-1);
+            dt = mean(abs(dt));
+            Sid_Processing.Fs = 1/dt;
         end
 
         function Sid_Processing=make_raman_spectrum(Sid_Processing)
@@ -630,6 +639,7 @@ classdef Sid_Processing
             newSP.wn=obj.wn;
             newSP.ramanSpectrum=obj.ramanSpectrum;
             newSP.ramanSpectrumWithMask=obj.ramanSpectrumWithMask;
+            newSP.Fs=obj.Fs;
             newSP.peakAmpli=obj.peakAmpli;
             newSP.peakAmpli_wn=obj.peakAmpli_wn;
             newSP.scoreCriteria=obj.scoreCriteria;

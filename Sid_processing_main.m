@@ -1,4 +1,5 @@
 close all
+
 clear variables 
 %cd('/Users/paulohd/Desktop/PauloDiniz')
 cd('/Users/paulohd/Documents/Data_SID/210619') % '210306' (xp 29, 30), 2ele
@@ -26,7 +27,7 @@ SP.window2_name = 'tukeywin'; %barthannwin, bartlett, blackman, blackmanharris, 
 SP.interp_method = 'makima'; %makima, pchirp, linear
 
 %[SP.window2_name, SP.ratio_window] = get_best_window(SP);
-SP.ratio_window = 0.2;%get_best_ratio_window_by_frequency(SP); % after tukey and deadtime
+SP.ratio_window = 0.7;%get_best_ratio_window_by_frequency(SP); % after tukey and deadtime
 %SP.ratio_window = get_best_ratio_window_by_ssim(SP); % after tukey and deadtime
 
 % Removes the large curve before the sinusoidal

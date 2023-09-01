@@ -1,7 +1,7 @@
 function plot_graphs(SP)
 
     name_of_figure = append('Exp : ', string(SP.xp_number));
-    h1 = figure('Position', [50 100 1300 1000],'Name', name_of_figure);
+    h1 = figure('Position', [50 100 1300 800],'Name', name_of_figure);
     
     subplot(6,3,[1,2,4,5,7,8]);
 

@@ -66,7 +66,7 @@ function best_ratio = get_best_ratio_window_by_frequency(SPtemp)
        end
         
     end
-    best_ratio_temp = SP(best_indice).ratio_window;
+    best_ratio_temp = SP(best_indice).ratio_window;        
 
     fprintf('The best ratio window(%s) by frequency is %s.\n',string(SP(best_indice).window2_name),string(best_ratio_temp))
     best_ratio = best_ratio_temp;

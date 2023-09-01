@@ -2,11 +2,11 @@ close all
 
 clear variables 
 %cd('/Users/paulohd/Desktop/PauloDiniz')
-cd('/Users/paulohd/Documents/Data_SID/210619') % '210306' (xp 29, 30), 2ele
+cd('C:\Users\mosaic\OneDrive - Lightcore Technologies\Bureau\PauloDiniz\210619(1samp)') % '210306' (xp 29, 30), 2ele
                                                % '210507' (xp 41, 15, 16, 17) 2ele
                                                % '210617' (xp 4, 19), 1 ele
-%addpath('/Users/paulohd/Desktop/PauloDiniz')
-addpath('/Users/paulohd/Documents/Data_SID/210619')
+%addpath('/Users/paulohd/Desktop/PauloDiniz')  %210619 xp 10 pour analyser
+addpath('C:\Users\mosaic\OneDrive - Lightcore Technologies\Bureau\PauloDiniz\210619(1samp)')
 
 %% CODE FOR USING THE CLASS THAT MAKES THE SAME THING AS SID'S CODE
 
@@ -15,19 +15,19 @@ SP=Sid_Processing();
 SP.DCopt=1;
 
 % Choose the experiment, and load all the data from the correct folders
-SP=SP.choose_folders_load_data(10); 
+SP=SP.choose_folders_load_data(1); 
 
 % Put the parameters
 SP.tukey_window_param = 1;
 SP.deadtime=74; %74
-SP.window2_name = 'tukeywin'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
+SP.window2_name = 'blackmanharris'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
                         % chebwin, flattopwin, gausswin, hamming, hann,
                         % kaiser, nuttallwin, parzenwin, rectwin,
                         % taylorwin, tukeywin,tukeywinINV, triang, ones
 SP.interp_method = 'makima'; %makima, pchirp, linear
 
 %[SP.window2_name, SP.ratio_window] = get_best_window(SP);
-SP.ratio_window = 0.7;%get_best_ratio_window_by_frequency(SP); % after tukey and deadtime
+SP.ratio_window = 0.31;%get_best_ratio_window_by_frequency(SP); % after tukey and deadtime
 %SP.ratio_window = get_best_ratio_window_by_ssim(SP); % after tukey and deadtime
 
 % Removes the large curve before the sinusoidal
@@ -68,6 +68,7 @@ SP = SP.points_to_plot_by_frequency();
 plot_spectrogram(SP);
 %save_graphs_as_PDF(SP); %(12 seconds)
 %save_raman_spectrum_as_PDF(SP);
+%save_windows_by_ratio_as_gif(SP);
 
 
 

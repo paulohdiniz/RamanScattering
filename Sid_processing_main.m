@@ -2,11 +2,11 @@ close all
 
 clear variables 
 %cd('/Users/paulohd/Desktop/PauloDiniz')
-cd('C:\Users\mosaic\OneDrive - Lightcore Technologies\Bureau\PauloDiniz\210619(1samp)') % '210306' (xp 29, 30), 2ele
+cd('C:\Users\phdin\Desktop\PauloDiniz\210619(1samp)') % '210306' (xp 29, 30), 2ele
                                                % '210507' (xp 41, 15, 16, 17) 2ele
                                                % '210617' (xp 4, 19), 1 ele
 %addpath('/Users/paulohd/Desktop/PauloDiniz')  %210619 xp 10 pour analyser
-addpath('C:\Users\mosaic\OneDrive - Lightcore Technologies\Bureau\PauloDiniz\210619(1samp)')
+addpath('C:\Users\phdin\Desktop\PauloDiniz\210619(1samp)')
 
 %% CODE FOR USING THE CLASS THAT MAKES THE SAME THING AS SID'S CODE
 
@@ -27,7 +27,7 @@ SP.window2_name = 'blackmanharris'; %barthannwin, bartlett, blackman, blackmanha
 SP.interp_method = 'makima'; %makima, pchirp, linear
 
 %[SP.window2_name, SP.ratio_window] = get_best_window(SP);
-SP.ratio_window = 0.31;%get_best_ratio_window_by_frequency(SP); % after tukey and deadtime
+SP.ratio_window = 0.8;%get_best_ratio_window_by_frequency(SP); % after tukey and deadtime
 %SP.ratio_window = get_best_ratio_window_by_ssim(SP); % after tukey and deadtime
 
 % Removes the large curve before the sinusoidal
@@ -59,13 +59,13 @@ SP = SP.points_to_plot_by_frequency();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %PLOT 
-
-%plot_graphs(SP); %(5 seconds)
+test(SP);
+plot_graphs(SP); %(5 seconds)
 %plot_graphs_with_transmission(SP);
 %plot_graphs_with_filter(SP); %(20 seconds)
 %plot_graphs_with_mask(SP); %(5 seconds)
 %plot_best_ssim_by_ratio_window(SP);
-plot_spectrogram(SP);
+%plot_spectrogram(SP);
 %save_graphs_as_PDF(SP); %(12 seconds)
 %save_raman_spectrum_as_PDF(SP);
 %save_windows_by_ratio_as_gif(SP);

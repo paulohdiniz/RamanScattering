@@ -425,48 +425,11 @@ classdef Sid_Processing
         end
 
         function Sid_Processing=make_raman_spectrum(Sid_Processing)
-            
             Sid_Processing.ramanSpectrum = abs(sum(sum(Sid_Processing.hyperspectralRamanImageComplex,2),3));
             Sid_Processing.ramanSpectrum = Sid_Processing.ramanSpectrum(1:ceil(length(Sid_Processing.ramanSpectrum)/2));
-            
-            temp=Sid_Processing.ramanSpectrum;
-            temp=temp./max(temp(:));
-            
-            wn_temp=Sid_Processing.wn(Sid_Processing.wn<Sid_Processing.Max_wn_to_search_peaks);
-            temp=(temp(Sid_Processing.wn<Sid_Processing.Max_wn_to_search_peaks));
-            
-            wn_temp2=wn_temp(wn_temp>Sid_Processing.Min_wn_to_search_peaks);
-            temp=(temp(wn_temp>Sid_Processing.Min_wn_to_search_peaks));
-            
-            %Here it takes the values of the 3 biggest peaks and saves it in the wns_plot variable to plot later
-            [yPeaks,xPeaks, widths, proms] = findpeaks(temp,wn_temp2,'SortStr','descend',...
-                'MinPeakHeight',Sid_Processing.MinPeakHeight,...
-                'MinPeakDistance',Sid_Processing.MinPeakDistance,...
-                'MinPeakProminence',Sid_Processing.MinPeakProminence);
-            if numel(yPeaks) ~= 0
-                Sid_Processing.peakAmpli = zeros(1, numel(yPeaks));
-                Sid_Processing.peakAmpli_wn = zeros(1, numel(xPeaks));
-                Sid_Processing.peakWidth = zeros(1, numel(xPeaks));
-                Sid_Processing.peakProm = zeros(1, numel(xPeaks));
-                for i = 1:numel(yPeaks)
-                    Sid_Processing.peakAmpli(i) = yPeaks(i);
-                    Sid_Processing.peakAmpli_wn(i) = xPeaks(i);
-                    Sid_Processing.peakWidth(i) = widths(i)./max(widths(:)); %Normalize the width, before it was in cm^-1
-                    Sid_Processing.peakProm(i) = proms(i);
-                end
-                    Sid_Processing.scoreCriteria = getScoreCriteria(Sid_Processing);
-               
-            else
-                Sid_Processing.peakAmpli = [0 0 0];
-                Sid_Processing.peakAmpli_wn = [0 0 0];
-                Sid_Processing.peakWidth = [0 0 0];
-                Sid_Processing.peakProm = [0 0 0];
-                Sid_Processing.scoreCriteria = [0 0 0 0 0];
-            end
         end
 
         function Sid_Processing=calculated_ssim_per_wn(Sid_Processing)
-
             %Reference image
             temp2=squeeze(mean((Sid_Processing.data_processed(1).data_T),[1]));
             temp2=(temp2-min(temp2(:)))./max(temp2(:));
@@ -489,12 +452,15 @@ classdef Sid_Processing
             end
 
             temp=Sid_Processing.IP.ssim_wn;
-            wn_temp=Sid_Processing.wn(Sid_Processing.wn<250);
-            temp=(temp(Sid_Processing.wn<250));  
-            wn_temp2=wn_temp(wn_temp>4);
-            temp=(temp(wn_temp>4));
+            wn_temp=Sid_Processing.wn(Sid_Processing.wn<Sid_Processing.Max_wn_to_search_peaks);
+            temp=(temp(Sid_Processing.wn<Sid_Processing.Max_wn_to_search_peaks));  
+            wn_temp2=wn_temp(wn_temp>Sid_Processing.Min_wn_to_search_peaks);
+            temp=(temp(wn_temp>Sid_Processing.Min_wn_to_search_peaks));
 
-            [yPeaks,xPeaks] = findpeaks(temp,wn_temp2,'SortStr','descend','MinPeakHeight',0.05,'MinPeakDistance',10,'MinPeakProminence',0.02);
+            [yPeaks,xPeaks] = findpeaks(temp,wn_temp2,'SortStr','descend',...
+                'MinPeakHeight',Sid_Processing.MinPeakHeight,...
+                'MinPeakDistance',Sid_Processing.MinPeakDistance,...
+                'MinPeakProminence',Sid_Processing.MinPeakProminence);
             Sid_Processing.IP.peaks_ssim = zeros(1, max(3, numel(yPeaks)));
             Sid_Processing.IP.peaks_ssim_wn = zeros(1, max(3, numel(xPeaks)));
             if numel(xPeaks) ~= 0
@@ -513,14 +479,17 @@ classdef Sid_Processing
 
             temp=Sid_Processing.IP.ssim_wn;
             
-            wn_temp=Sid_Processing.wn(Sid_Processing.wn<250);
-            temp=(temp(Sid_Processing.wn<250));
+            wn_temp=Sid_Processing.wn(Sid_Processing.wn<Sid_Processing.Max_wn_to_search_peaks);
+            temp=(temp(Sid_Processing.wn<Sid_Processing.Max_wn_to_search_peaks));
             
-            wn_temp2=wn_temp(wn_temp>4);
-            temp=(temp(wn_temp>4));
+            wn_temp2=wn_temp(wn_temp>Sid_Processing.Min_wn_to_search_peaks);
+            temp=(temp(wn_temp>Sid_Processing.Min_wn_to_search_peaks));
 
 
-            [yPeaks,xPeaks] = findpeaks(temp,wn_temp2,'SortStr','descend','MinPeakHeight',0.05,'MinPeakDistance',10,'MinPeakProminence',0.02);
+            [yPeaks,xPeaks] = findpeaks(temp,wn_temp2,'SortStr','descend',...
+                'MinPeakHeight',Sid_Processing.MinPeakHeight,...
+                'MinPeakDistance',Sid_Processing.MinPeakDistance,...
+                'MinPeakProminence',Sid_Processing.MinPeakProminence);
             
             if numel(xPeaks) ~= 0
                 Sid_Processing.wns_plot = zeros(1, numel(xPeaks));
@@ -554,26 +523,61 @@ classdef Sid_Processing
             temp=Sid_Processing.ramanSpectrum;
             temp=temp./max(temp(:));
             
-            wn_temp=Sid_Processing.wn(Sid_Processing.wn<250);
-            temp=(temp(Sid_Processing.wn<250));
+            wn_temp=Sid_Processing.wn(Sid_Processing.wn<Sid_Processing.Max_wn_to_search_peaks);
+            temp=(temp(Sid_Processing.wn<Sid_Processing.Max_wn_to_search_peaks));
             
-            wn_temp2=wn_temp(wn_temp>4);
-            temp=(temp(wn_temp>4));
+            wn_temp2=wn_temp(wn_temp>Sid_Processing.Min_wn_to_search_peaks);
+            temp=(temp(wn_temp>Sid_Processing.Min_wn_to_search_peaks));
             
             %Here it takes the values of the 3 biggest peaks and saves it in the wns_plot variable to plot later
-            [yPeaks,xPeaks,k,prm] = findpeaks(temp,wn_temp2,'SortStr','descend','MinPeakHeight',0.05,'MinPeakDistance',10,'MinPeakProminence',0.02);
-            [~,i] = sort(prm,'descend'); %indice with the prom is higher
+            [yPeaks,xPeaks, widths, proms] = findpeaks(temp,wn_temp2,'SortStr','descend',...
+                'MinPeakHeight',Sid_Processing.MinPeakHeight,...
+                'MinPeakDistance',Sid_Processing.MinPeakDistance,...
+                'MinPeakProminence',Sid_Processing.MinPeakProminence);
+
+            % Créez une matrice avec les colonnes yPeaks, xPeaks, widths et proms
+            peakData = [yPeaks, xPeaks, widths, proms];
+
+            % Triez les données par proms en ordre décroissant
+            sortedPeakData = sortrows(peakData, -4); % -4 est l'indice de la colonne des proms
+
+            % Obtenez les valeurs triées dans les variables correspondantes
+            yPeaksSorted = sortedPeakData(:, 1);
+            xPeaksSorted = sortedPeakData(:, 2);
+            widthsSorted = sortedPeakData(:, 3);
+            promsSorted = sortedPeakData(:, 4);
+
+            if numel(yPeaks) ~= 0
+                Sid_Processing.peakAmpli = zeros(1, numel(yPeaks));
+                Sid_Processing.peakAmpli_wn = zeros(1, numel(xPeaks));
+                Sid_Processing.peakWidth = zeros(1, numel(xPeaks));
+                Sid_Processing.peakProm = zeros(1, numel(xPeaks));
+                for i = 1:numel(yPeaks)
+                    Sid_Processing.peakAmpli(i) = yPeaksSorted(i);
+                    Sid_Processing.peakAmpli_wn(i) = xPeaksSorted(i); %It is in cm^-1
+                    Sid_Processing.peakWidth(i) = widthsSorted(i); %It is in cm^-1
+                    Sid_Processing.peakProm(i) = promsSorted(i);
+                end
+                    Sid_Processing.scoreCriteria = getScoreCriteria(Sid_Processing);
+               
+            else
+                Sid_Processing.peakAmpli = [0 0 0];
+                Sid_Processing.peakAmpli_wn = [0 0 0];
+                Sid_Processing.peakWidth = [0 0 0];
+                Sid_Processing.peakProm = [0 0 0];
+                Sid_Processing.scoreCriteria = [0 0 0 0 0];
+            end
              if (size(xPeaks, 1) == 0)
                  Sid_Processing.wns_plot=[0 0 0];
              end
              if (size(xPeaks, 1) == 1)
-                 Sid_Processing.wns_plot=[xPeaks(i(1)) 0 0];
+                 Sid_Processing.wns_plot=[Sid_Processing.peakAmpli_wn(1) 0 0];
              end
              if (size(xPeaks, 1) == 2)
-                 Sid_Processing.wns_plot=[xPeaks(i(1)) xPeaks(i(2)) 0];
+                 Sid_Processing.wns_plot=[Sid_Processing.peakAmpli_wn(1) Sid_Processing.peakAmpli_wn(2) 0];
              end
              if (size(xPeaks, 1) >= 3)
-                 Sid_Processing.wns_plot=[xPeaks(i(1)) xPeaks(i(2)) xPeaks(i(3))];
+                 Sid_Processing.wns_plot=[Sid_Processing.peakAmpli_wn(1) Sid_Processing.peakAmpli_wn(2) Sid_Processing.peakAmpli_wn(3)];
              end
                  
              

@@ -20,14 +20,14 @@ SP=SP.choose_folders_load_data(1);
 % Put the parameters
 SP.tukey_window_param = 1;
 SP.deadtime=74; %74
-SP.window2_name = 'blackmanharris'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
+SP.window2_name = 'ones'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
                         % chebwin, flattopwin, gausswin, hamming, hann,
                         % kaiser, nuttallwin, parzenwin, rectwin,
                         % taylorwin, tukeywin,tukeywinINV, triang, ones
 SP.interp_method = 'makima'; %makima, pchirp, linear
 
 %[SP.window2_name, SP.ratio_window] = get_best_window(SP);
-SP.ratio_window = 0.8;%get_best_ratio_window_by_frequency(SP); % after tukey and deadtime
+SP.ratio_window = 1;%get_best_ratio_window_by_frequency(SP); % after tukey and deadtime
 %SP.ratio_window = get_best_ratio_window_by_ssim(SP); % after tukey and deadtime
 
 % Removes the large curve before the sinusoidal
@@ -60,7 +60,7 @@ SP = SP.points_to_plot_by_frequency();
 
 %PLOT 
 test(SP);
-plot_graphs(SP); %(5 seconds)
+% plot_graphs(SP); %(5 seconds)
 %plot_graphs_with_transmission(SP);
 %plot_graphs_with_filter(SP); %(20 seconds)
 %plot_graphs_with_mask(SP); %(5 seconds)

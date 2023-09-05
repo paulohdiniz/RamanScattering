@@ -21,7 +21,7 @@ function test(SP)
         temp=ones(length(complete_filter(i).window),50,50);
         temp=bsxfun(@times,temp,complete_filter(i).window.');
         signalIFFT(i).signal = ifft(temp.*SP.hyperspectralRamanImageComplex, 2048, 1);
-        %figure,plot(squeeze(mean(real(signalIFFT(i).signal),[2 3])))
+        figure,plot(squeeze(mean(real(signalIFFT(i).signal),[2 3])))
 
     end
 
@@ -31,18 +31,10 @@ function test(SP)
     expr = 'a*cos(b*x + c)*exp(-x/d)';
     time = time(:);
     meanRealSignal = meanRealSignal(:);
-    exclude1 =  [time < 8.6e-12];
-    fit_result = fit(time, meanRealSignal, expr, 'Exclude', exclude1);
+    fit_result = fit(time, meanRealSignal, expr);
     parametres_initiaux = coeffvalues(fit_result);
-
-    lb = []; % Bornes inférieures des paramètres (le cas échéant)
-    ub = []; % Bornes supérieures des paramètres (le cas échéant)
-    options = optimoptions('lsqcurvefit', 'Display', 'iter'); % Options de l'optimiseur
-    fitted_params = lsqcurvefit(@model, parametres_initiaux, time, meanRealSignal, lb, ub, options);
-
-    figure, plot(fit_result, time',  squeeze(meanRealSignal)', exclude1);
-
-
+    parametres_initiaux = [-5.396e-16, fit_result.b, fit_result.c, fit_result.d ]
+    plot(fit_result, time,  squeeze(meanRealSignal)','Start', startPoints, 'Exclude', [time(1400:end)]);
     parametres_optimaux = lsqcurvefit(model, parametres_initiaux, time(1:1400), meanRealSignal(1:1400));
     A_optimal = parametres_optimaux(1);
     omega_optimal = parametres_optimaux(2);

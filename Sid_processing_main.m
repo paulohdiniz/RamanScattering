@@ -60,7 +60,8 @@ SP = SP.points_to_plot_by_frequency();
 
 %PLOT 
 test(SP);
-% plot_graphs(SP); %(5 seconds)
+
+%plot_graphs(SP); %(5 seconds)
 %plot_graphs_with_transmission(SP);
 %plot_graphs_with_filter(SP); %(20 seconds)
 %plot_graphs_with_mask(SP); %(5 seconds)

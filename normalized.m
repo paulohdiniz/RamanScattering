@@ -1,0 +1,16 @@
+
+meanRealSignal = meanRealSignal./max(meanRealSignal);
+time= time./max(time);
+
+fun = @(x, time)x(1)*cos(x(2)*time + x(3)).*exp(-time / x(4));
+x0 =  [5, 100 , 0.5, 0.3]; %https://stackoverflow.com/questions/45924581/local-minimum-at-initial-point-when-fitting-gaussian-with-lsqcurvefit
+    options = optimoptions('lsqcurvefit',...,
+        'OptimalityTolerance', 1e-100, ...
+        'FunctionTolerance', 1e-100,...
+        'Algorithm','trust-region-reflective',...
+        'Display','iter',...,
+        'StepTolerance',1e-100,...
+        'MaxFunctionEvaluations', 1e3,...
+        'MaxIterations', 1e3); %https://stackoverflow.com/questions/45924581/local-minimum-at-initial-point-when-fitting-gaussian-with-lsqcurvefit
+    x = lsqcurvefit(fun, x0, time, meanRealSignal, [],[],options);
+figure, plot(time, meanRealSignal, 'ko', time, fun(x, time), 'b-')

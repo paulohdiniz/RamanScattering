@@ -182,8 +182,10 @@ classdef Sid_Processing
             answer={};
             deadtime2=deadtime;
             while ~any(cellfun(@(x) (strcmp(x,'yes')),answer))
-                window=[zeros(deadtime2,1).' tukeywin(N_window,tukey_window_param).' ].';
-                window=window(1:Sid_Processing.N_t);
+                %window=[zeros(deadtime2,1).' tukeywin(N_window,tukey_window_param).' ].';
+                %window=[zeros(deadtime2,1).' rectwin(N_window).' ].';
+                window=[zeros(deadtime2,1).' tukeywin(Sid_Processing.N_t - deadtime2,tukey_window_param).' ].'; %TO DO: voir avec sam
+                window=window(1:Sid_Processing.N_t); 
                 figure(101),clf,
                 plot(signal)
                 hold on,plot(signal.*window)
@@ -217,7 +219,7 @@ classdef Sid_Processing
             % specified
             N_window=Sid_Processing.N_t*2;
             deadtime2=deadtime;
-            window=[zeros(deadtime2,1).' tukeywin(N_window,tukey_window_param).' ].';
+            window=[zeros(deadtime2,1).' tukeywin(Sid_Processing.N_t - deadtime2,tukey_window_param).' ].'; %TO DO: voir avec sam
             window=window(1:Sid_Processing.N_t);
 
             % TO DO :

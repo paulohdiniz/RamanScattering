@@ -22,8 +22,8 @@ function test(SP)
         temp=bsxfun(@times,temp,complete_filter(i).window.');
         NFFT = 2^(nextpow2(size(temp,1))); 
 
-        signalIFFT(i).signal = ifft(temp.*SP.hyperspectralRamanImageComplex, NFFT, 1);
-        %figure,plot(squeeze(mean(real(signalIFFT(i).signal),[2 3])))
+        signalIFFT(i).signal = ifft(temp.*SP.hyperspectralRamanImageComplex, 2048, 1);
+        figure,plot(squeeze(mean(real(signalIFFT(i).signal),[2 3])))
 
     end
     
@@ -54,6 +54,7 @@ function test(SP)
     % figure, plot(fit_result, time',  squeeze(meanRealSignal)', exclude1);
 
     %Try with lsqcurvefit
+
     time = time';
     meanRealSignal = meanRealSignal';
 
@@ -61,18 +62,39 @@ function test(SP)
     meanRealSignal= meanRealSignal(time > 8.6e-12 & time < 2.47e-11);
     time=time(time > 8.6e-12 & time < 2.47e-11);
 
-    fun = @(x, time)x(1)*cos(x(2)*time + x(3)).*exp(-time / x(4));
-    x0 =  [3e-13, 2.5e12, 0.5, 7e-10];
+    fun = @(x, time)x(1)*cos(x(2)*(time - 8.6e-12) + x(3)).*exp(- (time - 8.6e-12) / x(4));
+    x0 =  [max(meanRealSignal), (12*10^8/SP.c)*2*pi*SP.c, 0.5, SP.peakWidth(1)];
     options = optimoptions('lsqcurvefit',...,
-        'OptimalityTolerance', 1e-100, ...
-        'FunctionTolerance', 1e-100,...
+        'OptimalityTolerance', 1e-25, ...
+        'FunctionTolerance', 1e-25,...
         'Algorithm','trust-region-reflective',...
         'Display','iter',...,
-        'StepTolerance',1e-100,...
+        'StepTolerance',1e-25,...
         'MaxFunctionEvaluations', 1e3,...
-        'MaxIterations', 1e4); %https://stackoverflow.com/questions/45924581/local-minimum-at-initial-point-when-fitting-gaussian-with-lsqcurvefit
+        'MaxIterations', 1e3); %https://stackoverflow.com/questions/45924581/local-minimum-at-initial-point-when-fitting-gaussian-with-lsqcurvefit
     x = lsqcurvefit(fun, x0, time, meanRealSignal, [],[],options);
-    figure, plot(time, meanRealSignal, 'ko', time, fun(x0, time), 'b-')
+    figure, plot(time, meanRealSignal, 'ko', time, fun(x0, time), 'b-'), hold on,
+    plot(time, meanRealSignal, 'ko', time, fun(x, time), '--')
+
+    %Try with nlinfit     (Statistics and Machine Learning Toolbox)
+    % time = time';
+    % meanRealSignal = meanRealSignal';
+    % 
+    % %just la descente
+    % meanRealSignal= meanRealSignal(time > 8.6e-12 & time < 2.47e-11);
+    % time=time(time > 8.6e-12 & time < 2.47e-11);
+    % 
+    % fun = @(x, time)x(1)*cos(x(2)*time + x(3)).*exp(-time / x(4));
+    % %x0 =  [3e-13, 2.5e12, 0.5, 7e-10];
+    % options = statset('nlinfit');
+    % options.TolX =  1e-25;
+    % options.TolFun =  1e-25;
+    % options.Display = 'iter';
+    % options.MaxIter =  1e3;
+    % 
+    % x = nlinfit(time, meanRealSignal, fun,[], options);
+    % figure, plot(time, meanRealSignal, 'ko', time, fun(x0, time), 'b-'), hold on,
+    % plot(time, meanRealSignal, 'ko', time, fun(x, time), '--')
 
 
 

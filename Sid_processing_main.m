@@ -19,7 +19,7 @@ SP=SP.choose_folders_load_data(1);
 
 % Put the parameters
 SP.tukey_window_param = 1;
-SP.deadtime=74; %74
+SP.deadtime=90; %74
 SP.window2_name = 'ones'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
                         % chebwin, flattopwin, gausswin, hamming, hann,
                         % kaiser, nuttallwin, parzenwin, rectwin,
@@ -27,12 +27,12 @@ SP.window2_name = 'ones'; %barthannwin, bartlett, blackman, blackmanharris, bohm
 SP.interp_method = 'makima'; %makima, pchirp, linear
 
 %[SP.window2_name, SP.ratio_window] = get_best_window(SP);
-SP.ratio_window = 1;%get_best_ratio_window_by_frequency(SP); % after tukey and deadtime
+SP.ratio_window =1;%get_best_ratio_window_by_frequency(SP); % after tukey and deadtime
 %SP.ratio_window = get_best_ratio_window_by_ssim(SP); % after tukey and deadtime
 
 % Removes the large curve before the sinusoidal
-SP=SP.window_overlap_to_test(SP.tukey_window_param,SP.deadtime);
-%SP=SP.window_overlap(SP.tukey_window_param,SP.deadtime); %change de 
+%SP=SP.window_overlap_to_test(SP.tukey_window_param,SP.deadtime);
+SP=SP.window_overlap(SP.tukey_window_param,SP.deadtime); %change de 
 
 % Normalizes and centers the data
 SP=SP.Tnorm_and_center_data(1,0,SP.deadtime);

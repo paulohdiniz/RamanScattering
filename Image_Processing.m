@@ -14,6 +14,12 @@ classdef Image_Processing
 
         imag_filtered
 
+        %No-references image quality score
+        piqe_score_wn %https://fr.mathworks.com/help/images/ref/piqe.html
+        brisque_score_wn %https://fr.mathworks.com/help/images/ref/brisque.html
+        niqe_score_wn %https://fr.mathworks.com/help/images/ref/niqe.html
+
+
     end
     
     methods
@@ -91,6 +97,7 @@ classdef Image_Processing
             imag_filtered = imdiffusefilt(imag_raw,'ConductionMethod','quadratic', ...
             'GradientThreshold',gradThresh,'NumberOfIterations',numIter);
         end
+
         function [rgb] = imagesc2rgb(~,im)
 
             h = imagesc(im); % imagesc handle
@@ -101,6 +108,10 @@ classdef Image_Processing
             ind = reshape(interp1(c,1:n,im(:),'nearest'),size(im)); % indexed image
             rgb = ind2rgb(ind,cm); % rgb image
         
+        end
+
+        function piqe_score = get_piqe_score(~, img)
+            piqe_score = piqe(img);
         end
 
     end

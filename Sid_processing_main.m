@@ -1,5 +1,4 @@
 close all
-
 clear variables 
 %cd('/Users/paulohd/Desktop/PauloDiniz')
 cd('C:\Users\phdin\Desktop\PauloDiniz\210619(1samp)') % '210306' (xp 29, 30), 2ele
@@ -18,9 +17,9 @@ SP.DCopt=1;
 SP=SP.choose_folders_load_data(1); 
 
 % Put the parameters
-SP.tukey_window_param = 1;
-SP.deadtime=90; %74
-SP.window2_name = 'ones'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
+SP.tukey_window_param = .3;
+SP.deadtime=100; %74
+SP.window2_name = 'gausswin'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
                         % chebwin, flattopwin, gausswin, hamming, hann,
                         % kaiser, nuttallwin, parzenwin, rectwin,
                         % taylorwin, tukeywin,tukeywinINV, triang, ones
@@ -31,8 +30,8 @@ SP.ratio_window =1;%get_best_ratio_window_by_frequency(SP); % after tukey and de
 %SP.ratio_window = get_best_ratio_window_by_ssim(SP); % after tukey and deadtime
 
 % Removes the large curve before the sinusoidal
-%SP=SP.window_overlap_to_test(SP.tukey_window_param,SP.deadtime);
-SP=SP.window_overlap(SP.tukey_window_param,SP.deadtime); %change de 
+SP=SP.window_overlap_to_test(SP.tukey_window_param,SP.deadtime);
+%SP=SP.window_overlap(SP.tukey_window_param,SP.deadtime); %change de 
 
 % Normalizes and centers the data
 SP=SP.Tnorm_and_center_data(1,0,SP.deadtime);
@@ -48,7 +47,7 @@ SP = SP.FT(SP.data_stitched.t_stitched, permute(SP.data_stitched.data_R,[3 1 2])
 
 SP = SP.make_raman_spectrum();
 
-SP = SP.calculated_ssim_per_wn();
+SP = SP.calculated_images_scores_per_wn();
 
 %Criteria ssym or frequency to find peaks
 
@@ -58,8 +57,9 @@ SP = SP.points_to_plot_by_frequency();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+get_gif_by_window(SP);
+get_model(SP);
 %PLOT 
-test(SP);
 
 %plot_graphs(SP); %(5 seconds)
 %plot_graphs_with_transmission(SP);

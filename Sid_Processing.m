@@ -74,8 +74,6 @@ classdef Sid_Processing
         peakProm
         scoreCriteria
 
-        rgbimg
-
         %Plot
         wns_plot
         pixels_plot
@@ -175,15 +173,11 @@ classdef Sid_Processing
         end
 
         function Sid_Processing=window_overlap(Sid_Processing,tukey_window_param,deadtime)
-            % We kill the overlap with a half tukey window of the parameter
-            % specified
+            % We kill the overlap with a half tukey window of the parameter specified
             signal=sum(sum(Sid_Processing.data_raw(1).data_R,2),3);
-            N_window=Sid_Processing.N_t*2;
             answer={};
             deadtime2=deadtime;
             while ~any(cellfun(@(x) (strcmp(x,'yes')),answer))
-                %window=[zeros(deadtime2,1).' tukeywin(N_window,tukey_window_param).' ].';
-                %window=[zeros(deadtime2,1).' rectwin(N_window).' ].';
                 window=[zeros(deadtime2,1).' tukeywin(Sid_Processing.N_t - deadtime2,tukey_window_param).' ].'; %TO DO: voir avec sam
                 window=window(1:Sid_Processing.N_t); 
                 figure(101),clf,
@@ -215,14 +209,11 @@ classdef Sid_Processing
         end
 
         function Sid_Processing=window_overlap_to_test(Sid_Processing,tukey_window_param,deadtime) %just for testing
-            % We kill the overlap with a half tukey window of the parameter
-            % specified
-            N_window=Sid_Processing.N_t*2;
+            % We kill the overlap with a half tukey window of the parameter specified
             deadtime2=deadtime;
             window=[zeros(deadtime2,1).' tukeywin(Sid_Processing.N_t - deadtime2,tukey_window_param).' ].'; %TO DO: voir avec sam
             window=window(1:Sid_Processing.N_t);
 
-            % TO DO :
             % THEN AND STITICHING
             for tt=1:size(Sid_Processing.data_raw,2)
                 if tt==1
@@ -287,14 +278,6 @@ classdef Sid_Processing
 
             t_stitch=[cell2mat({temp_data4D.t})];
             data_R_stitch=permute(cell2mat(cellfun(@(x) permute(x,[2 1 3]),{temp_data4D.data_R},'UniformOutput',false)),[1 3 2]);
-            
-            % Supprimer les valeurs répétées de t_stitch
-            % [unique_t, unique_indices] = unique(t_stitch);
-            % data_R_unique = data_R_stitch(:, :, unique_indices);
-            % 
-            % % Mettre à jour les variables
-            % t_stitch = unique_t;
-            % data_R_stitch = data_R_unique;
             
             % Interpolate
             t_ini=repmat(time_axis,1,size(Sid_Processing.delays,2));
@@ -431,7 +414,7 @@ classdef Sid_Processing
             Sid_Processing.ramanSpectrum = Sid_Processing.ramanSpectrum(1:ceil(length(Sid_Processing.ramanSpectrum)/2));
         end
 
-        function Sid_Processing=calculated_ssim_per_wn(Sid_Processing)
+        function Sid_Processing=calculated_images_scores_per_wn(Sid_Processing)
             %Reference image
             temp2=squeeze(mean((Sid_Processing.data_processed(1).data_T),[1]));
             temp2=(temp2-min(temp2(:)))./max(temp2(:));
@@ -442,10 +425,11 @@ classdef Sid_Processing
                 temp=(temp-min(temp(:)))./max(temp(:));
                 Sid_Processing.IP.mat_img_wn{j} = temp;
                 Sid_Processing.IP.ssim_wn(j) = ssim(temp,temp2);
+                Sid_Processing.IP.piqe_score_wn(j) = piqe(mat2gray(temp));
+                Sid_Processing.IP.niqe_score_wn(j) = niqe(mat2gray(temp));
+                Sid_Processing.IP.brisque_score_wn(j) = brisque(mat2gray(temp));
             end
 
-            %TODO : voir pq parfois il arrive ssim de 1024 ele et wn de
-            %512.
             if (length(Sid_Processing.IP.ssim_wn) > length(Sid_Processing.wn))
                 Sid_Processing.IP.ssim_wn=Sid_Processing.IP.ssim_wn(1:length(Sid_Processing.wn));
             end
@@ -560,7 +544,7 @@ classdef Sid_Processing
                     Sid_Processing.peakWidth(i) = widthsSorted(i); %It is in cm^-1
                     Sid_Processing.peakProm(i) = promsSorted(i);
                 end
-                    Sid_Processing.scoreCriteria = getScoreCriteria(Sid_Processing);
+                    Sid_Processing.scoreCriteria = get_score_criteria(Sid_Processing);
                
             else
                 Sid_Processing.peakAmpli = [0 0 0];
@@ -599,7 +583,6 @@ classdef Sid_Processing
                 Sid_Processing.wns_plot(2) = Sid_Processing.pixels_plot(1);
                 Sid_Processing.wns_plot(3) = Sid_Processing.pixels_plot(1);
             end
-
         end
 
         function Sid_Processing=make_raman_spectrum_with_mask(Sid_Processing, mask)
@@ -649,7 +632,6 @@ classdef Sid_Processing
             newSP.peakAmpli=obj.peakAmpli;
             newSP.peakAmpli_wn=obj.peakAmpli_wn;
             newSP.scoreCriteria=obj.scoreCriteria;
-            newSP.rgbimg=obj.rgbimg;
             newSP.wns_plot=obj.wns_plot;
             newSP.pixels_plot=obj.pixels_plot;
             newSP.window2=obj.window2;

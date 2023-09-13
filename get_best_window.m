@@ -18,7 +18,7 @@ function [best_window, best_ratio_window, val_max] = get_best_window(SPtemp)
             SP(i) = SP(i).FT(SP(i).data_stitched.t_stitched, permute(SP(i).data_stitched.data_R,[3 1 2]).*repmat(SP(i).window2.',[1 50 50])); % wavenumbers are in cm^-1, Raman SP(i)ectrum is arbitrary units
             SP(i) = SP(i).make_raman_spectrum();
             SP(i) = SP(i).points_to_plot_by_frequency();
-            SP(i).scoreCriteria = getScoreCriteria(SP(i));
+            SP(i).scoreCriteria = get_score_criteria(SP(i));
             
             val_temp = SP(i).scoreCriteria(2);
             

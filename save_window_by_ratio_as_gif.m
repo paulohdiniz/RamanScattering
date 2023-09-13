@@ -12,7 +12,7 @@ function save_window_by_ratio_as_gif(SPtemp)
         SP(i) = SP(i).pick_fourier_window(SP(i).window2_name); 
         SP(i) = SP(i).FT(SP(i).data_stitched.t_stitched, permute(SP(i).data_stitched.data_R,[3 1 2]).*repmat(SP(i).window2.',[1 50 50])); % wavenumbers are in cm^-1, Raman SP(i)ectrum is arbitrary units
         SP(i) = SP(i).make_raman_spectrum();
-        SP(i) = SP(i).calculated_ssim_per_wn();
+        SP(i) = SP(i).calculated_images_scores_per_wn();
         SP(i) = SP(i).points_to_plot_by_frequency();
         create_gif(SP(i));
         
@@ -50,7 +50,7 @@ function save_window_by_ratio_as_gif(SPtemp)
         SP(i) = SP(i).pick_fourier_window(SP(i).window2_name); %SP(i).window2_name , blackman, tukeywin, hamming, hann, flattopwin, '...' for nothing
         SP(i) = SP(i).FT(SP(i).data_stitched.t_stitched, permute(SP(i).data_stitched.data_R,[3 1 2]).*repmat(SP(i).window2.',[1 50 50])); % wavenumbers are in cm^-1, Raman SP(i)ectrum is arbitrary units
         SP(i) = SP(i).make_raman_spectrum();
-        SP(i) = SP(i).calculated_ssim_per_wn();
+        SP(i) = SP(i).calculated_images_scores_per_wn();
         SP(i) = SP(i).points_to_plot_by_frequency();
         create_gif(SP(i));
         

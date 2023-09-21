@@ -194,8 +194,6 @@ classdef Sid_Processing
                 deadtime2=str2double(answer{1});
             end
             close(101)
-
-            % TO DO :
             % THEN AND STITICHING
             for tt=1:size(Sid_Processing.data_raw,2)
                 if tt==1
@@ -213,7 +211,7 @@ classdef Sid_Processing
             deadtime2=deadtime;
             window=[zeros(deadtime2,1).' tukeywin(Sid_Processing.N_t - deadtime2,tukey_window_param).' ].'; %TO DO: voir avec sam
             window=window(1:Sid_Processing.N_t);
-
+            
             % THEN AND STITICHING
             for tt=1:size(Sid_Processing.data_raw,2)
                 if tt==1

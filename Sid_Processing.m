@@ -181,8 +181,9 @@ classdef Sid_Processing
                 window=[zeros(deadtime2,1).' tukeywin(Sid_Processing.N_t - deadtime2,tukey_window_param).' ].'; %TO DO: voir avec sam
                 window=window(1:Sid_Processing.N_t); 
                 figure(101),clf,
-                plot(signal)
-                hold on,plot(signal.*window)
+                plot(signal./max(signal))
+                hold on,plot((signal.*window)./max(signal.*window))
+                hold on, plot(window./max(window))
                 prompt = {'Deadtime:','Is the windowing ok ?'};
                 dlgtitle = 'Input';
                 dims = [1 35];
@@ -192,8 +193,10 @@ classdef Sid_Processing
                 options.Interpreter='tex';
                 answer = inputdlg(prompt,dlgtitle,dims,definput,options);
                 deadtime2=str2double(answer{1});
+                tempDeadtime = deadtime2;
             end
             close(101)
+            Sid_Processing.deadtime = tempDeadtime;
             % THEN AND STITICHING
             for tt=1:size(Sid_Processing.data_raw,2)
                 if tt==1
@@ -396,8 +399,10 @@ classdef Sid_Processing
             varTEMP = fft(ReducedMeanSignal,NFFT,1); %TODO:TEST
             F = (((0:1/NFFT:1-1/NFFT)*Sid_Processing.Fs).');
             Sid_Processing.wn = fftshift(F-Sid_Processing.Fs/2);
+             %           plot(Sid_Processing.wn, abs(sum(sum(Y,2),3)));
             Sid_Processing.wn = Sid_Processing.wn(1:ceil(length(Sid_Processing.wn)/2))/3e8/100; %remove the negatives and put them in the unit cm^-1
             Sid_Processing.hyperspectralRamanImageComplex = Y;
+
         end
 
         function Sid_Processing=SamplingFrequency(Sid_Processing, time_vec)

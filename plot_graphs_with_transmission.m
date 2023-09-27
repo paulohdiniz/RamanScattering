@@ -18,7 +18,7 @@ function plot_graphs_with_transmission(SP)
     xlabel('delay [ps]','fontsize',14);
     ylabel('Raman oscillations','fontsize',14);
     title('Integrated temporal response','fontsize',14);
-    text(-0.1,1.1,'a','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',14)
+    text(-0.1,1.1,'','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',14)
     set(gca,'ytick',[])      
 
     subplot(2,3,2);
@@ -29,7 +29,7 @@ function plot_graphs_with_transmission(SP)
     ylabel('Raman Spectrum','fontsize',14);
     xlim([0,160])
     title('Integrated Raman Spectrum','fontsize',14)
-    text(-0.1,1.1,'b','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',14)
+    text(-0.1,1.1,'','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',14)
     %set(gca,'ytick',[]);
 
     subplot(2,3,3);
@@ -39,8 +39,8 @@ function plot_graphs_with_transmission(SP)
     xlabel('pixels','interpreter','tex');
     ylabel('pixels');
     colorbar;
-    title('Integrated Raman Spectrum','fontsize',14)
-    text(-0.1, 1.1,'c','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',14)
+    title('Transmission Image','fontsize',14)
+    text(-0.1, 1.1,'','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',14)
 
     subplot(2,3,4);
     imagesc(squeeze(abs(SP.hyperspectralRamanImageComplex(SP.pixels_plot(1),:,:))));

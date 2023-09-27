@@ -23,7 +23,7 @@ function signalIFFT = get_time_spec_from_peaks_by_ifft(SP)
         NFFT = 2^(nextpow2(size(temp,1))); 
 
         signalIFFT(i).signal = ifft(temp.*SP.hyperspectralRamanImageComplex, 2048, 1);
-        %figure,plot(squeeze(mean(real(signalIFFT(i).signal),[2 3])))
+        figure,plot(squeeze(mean(real(signalIFFT(i).signal),[2 3])))
 
     end
 

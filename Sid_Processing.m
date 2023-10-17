@@ -91,6 +91,9 @@ classdef Sid_Processing
         %PDF
         name_pdf;
 
+        %Model
+        signalIFFT;
+
     end
 
     methods
@@ -197,6 +200,7 @@ classdef Sid_Processing
             end
             close(101)
             Sid_Processing.deadtime = tempDeadtime;
+
             % THEN AND STITICHING
             for tt=1:size(Sid_Processing.data_raw,2)
                 if tt==1
@@ -291,13 +295,13 @@ classdef Sid_Processing
                     Sid_Processing.data_stitched.data_R = temp;
                     Sid_Processing.data_stitched.t_stitched=t_out;
 
-                case 'pchirp'
+                case 'pchip'
                     temp= pchip(t_stitch,data_R_stitch,t_out);
                     Sid_Processing.data_stitched.data_R = temp;
                     Sid_Processing.data_stitched.t_stitched=t_out;
 
-                case 'linear'
-                    temp= pchip(t_stitch,data_R_stitch,t_out);
+                case 'spline'
+                    temp= spline(t_stitch,data_R_stitch,t_out);
                     Sid_Processing.data_stitched.data_R = temp;
                     Sid_Processing.data_stitched.t_stitched=t_out;
             end
@@ -399,7 +403,6 @@ classdef Sid_Processing
             varTEMP = fft(ReducedMeanSignal,NFFT,1); %TODO:TEST
             F = (((0:1/NFFT:1-1/NFFT)*Sid_Processing.Fs).');
             Sid_Processing.wn = fftshift(F-Sid_Processing.Fs/2);
-             %           plot(Sid_Processing.wn, abs(sum(sum(Y,2),3)));
             Sid_Processing.wn = Sid_Processing.wn(1:ceil(length(Sid_Processing.wn)/2))/3e8/100; %remove the negatives and put them in the unit cm^-1
             Sid_Processing.hyperspectralRamanImageComplex = Y;
 
@@ -644,6 +647,7 @@ classdef Sid_Processing
             newSP.deadtime=obj.deadtime;
             newSP.IP = obj.IP;
             newSP.name_pdf = obj.name_pdf;
+            newSP.signalIFFT = obj.signalIFFT;
         end
         
     end

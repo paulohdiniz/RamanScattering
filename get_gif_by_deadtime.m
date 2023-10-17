@@ -1,10 +1,11 @@
-function get_gif_by_window(SPtemp)
+function get_gif_by_deadtime(SPtemp)
+    %SP.tukey_window_param = 1;
     
-    step = 0.05;
-    ratios = 0.05:step:1;
+    step = 2;
+    ratios = 50:step:130;
     for i = 1:numel(ratios)
         SP(i) = SPtemp.copy(); %copying the data internally is much faster than loading all the files every time
-        SP(i).ratio_window = ratios(i);
+        SP(i).deadtime = ratios(i);
         SP(i) = SP(i).window_overlap_to_test(SP(i).tukey_window_param,SP(i).deadtime);
         SP(i) = SP(i).Tnorm_and_center_data(1,0,SP(i).deadtime);
         SP(i) = SP(i).stitch_time_axis_T_with_interp(SP(i).interp_method);
@@ -13,11 +14,9 @@ function get_gif_by_window(SPtemp)
         SP(i) = SP(i).make_raman_spectrum();
         SP(i) = SP(i).points_to_plot_by_frequency();
         SP(i).signalIFFT = get_time_spec_from_peaks_by_ifft(SP(i));
-        create_gif_with_ifft(SP(i), 'windows');    
-        %create_gif(SP(i), SP.window2_name);
-        
+        create_gif_with_ifft(SP(i), 'deadtime');    
+        %create_gif(SP(i), 'Deadtime');
     end
-
    
 end
 

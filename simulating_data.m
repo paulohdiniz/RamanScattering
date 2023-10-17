@@ -37,10 +37,10 @@ tau=0.2e-12;
   figure,
 for ii=1:N_windows
     hold on,
-  plot((t_dazz+(ii-1)*3e-12)*1e12,squeeze(ringing(2,ii,:)))
+  %plot((t_dazz+(ii-1)*3e-12)*1e12,squeeze(ringing(2,ii,:)))
   %hold on,plot((t_dazz+(ii-1)*3e-12)*1e12,CC.*(ii==1))
-  %hold on,plot((t_dazz+(ii-1)*3e-12)*1e12,squeeze(sum(ringing(:,ii,:),1)).*squeeze(data_T(1,ii,:)),'k')
-  %hold on,plot((t_dazz+(ii-1)*3e-12)*1e12,squeeze(data_T(1,ii,:)),'r')
+  hold on,plot((t_dazz+(ii-1)*3e-12)*1e12,squeeze(sum(ringing(:,ii,:),1)).*squeeze(data_T(1,ii,:)),'k')
+  hold on,plot((t_dazz+(ii-1)*3e-12)*1e12,squeeze(data_T(1,ii,:)),'r')
 end
 
 

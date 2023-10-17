@@ -1,10 +1,14 @@
 function signalIFFT = get_time_spec_from_peaks_by_ifft(SP)
+    
 
-    for i=1:3
+    if (numel(SP.peakAmpli_wn) ~= 0 )
+        for i=1:numel(SP.peakAmpli_wn)
+    
+            filter_window(i).wn =[(SP.peakAmpli_wn(i) - 1.5*(SP.peakWidth(i))) (SP.peakAmpli_wn(i) + 1.5*(SP.peakWidth(i)))];
+            complete_filter(i).window = zeros(1, length(SP.ramanSpectrum));
+            
+        end
 
-        filter_window(i).wn =[(SP.peakAmpli_wn(i) - 1.5*(SP.peakWidth(i))) (SP.peakAmpli_wn(i) + 1.5*(SP.peakWidth(i)))];
-        complete_filter(i).window = zeros(1, length(SP.ramanSpectrum));
-        
     end
     
     for i=1:size(filter_window,2)
@@ -23,8 +27,21 @@ function signalIFFT = get_time_spec_from_peaks_by_ifft(SP)
         NFFT = 2^(nextpow2(size(temp,1))); 
 
         signalIFFT(i).signal = ifft(temp.*SP.hyperspectralRamanImageComplex, 2048, 1);
-        figure,plot(squeeze(mean(real(signalIFFT(i).signal),[2 3])))
+        %figure,plot(squeeze(mean(real(signalIFFT(i).signal),[2 3])))
 
+    end
+    if (numel(signalIFFT) == 0)
+        for i=1:3
+            signalIFFT(i).signal = 0;
+        end
+    end
+    if (numel(signalIFFT) == 1)
+        for i=2:3
+            signalIFFT(i).signal = 0;
+        end
+    end
+    if (numel(signalIFFT) == 2)
+        signalIFFT(3).signal = 0;
     end
 
 end

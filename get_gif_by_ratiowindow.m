@@ -1,6 +1,6 @@
-function get_gif_by_window(SPtemp)
+function get_gif_by_ratiowindow(SPtemp)
     
-    step = 0.05;
+    step = 0.02;
     ratios = 0.05:step:1;
     for i = 1:numel(ratios)
         SP(i) = SPtemp.copy(); %copying the data internally is much faster than loading all the files every time
@@ -13,7 +13,7 @@ function get_gif_by_window(SPtemp)
         SP(i) = SP(i).make_raman_spectrum();
         SP(i) = SP(i).points_to_plot_by_frequency();
         SP(i).signalIFFT = get_time_spec_from_peaks_by_ifft(SP(i));
-        create_gif_with_ifft(SP(i), 'windows');    
+        create_gif_with_ifft(SP(i), 'ratioWindow');    
         %create_gif(SP(i), SP.window2_name);
         
     end

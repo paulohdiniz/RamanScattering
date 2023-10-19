@@ -18,8 +18,8 @@ SP=SP.choose_folders_load_data(41);
 
 % Put the parameters
 SP.tukey_window_param = 1;
-SP.deadtime=70; %110
-SP.window2_name = 'rectwin'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
+SP.deadtime=110; %110
+SP.window2_name = 'blackman'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
                         % chebwin, flattopwin, gausswin, hamming, hann,
                         % kaiser, nuttallwin, parzenwin, rectwin,
                         % taylorwin, tukeywin,tukeywinINV, triang, ones
@@ -56,12 +56,16 @@ SP = SP.points_to_plot_by_frequency();
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%GIFS
+
+%kkkk(SP);
 %get_gif_by_deadtime(SP);
-get_gif_by_interp_method(SP);
+%get_gif_by_interp_method(SP);
 %get_gif_by_ratiotukey(SP);
+%get_gif_by_ratiowindow(SP);
+%get_gif_by_windows(SP);
+%get_infos_by_windows(SP);
 
-
-%get_gif_by_window(SP);
 %get_model(SP);
 %get_time_spec_from_peaks_by_ifft(SP);
 
@@ -85,6 +89,6 @@ get_gif_by_interp_method(SP);
 %y = get_best_ratio_window_by_frequency(SP); %(10 sec)
 
 %Save the txt with the results of filters (30 sec).
-%get_best_filter(SP);
+get_txt_best_filter_by_ssim(SP);
 
 

@@ -513,7 +513,6 @@ classdef Sid_Processing
         function Sid_Processing=points_to_plot_by_frequency(Sid_Processing)
 
             temp=Sid_Processing.ramanSpectrum;
-            temp=temp./max(temp(:));
             
             wn_temp=Sid_Processing.wn(Sid_Processing.wn<Sid_Processing.Max_wn_to_search_peaks);
             temp=(temp(Sid_Processing.wn<Sid_Processing.Max_wn_to_search_peaks));
@@ -523,9 +522,9 @@ classdef Sid_Processing
             
             %Here it takes the values of the 3 biggest peaks and saves it in the wns_plot variable to plot later
             [yPeaks,xPeaks, widths, proms] = findpeaks(temp,wn_temp2,'SortStr','descend',...
-                'MinPeakHeight',Sid_Processing.MinPeakHeight,...
+                'MinPeakHeight',Sid_Processing.MinPeakHeight*max(temp(:)),...
                 'MinPeakDistance',Sid_Processing.MinPeakDistance,...
-                'MinPeakProminence',Sid_Processing.MinPeakProminence);
+                'MinPeakProminence',Sid_Processing.MinPeakProminence*max(temp(:)));
 
             % Créez une matrice avec les colonnes yPeaks, xPeaks, widths et proms
             peakData = [yPeaks, xPeaks, widths, proms];

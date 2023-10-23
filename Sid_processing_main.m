@@ -58,6 +58,7 @@ SP = SP.points_to_plot_by_frequency();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%GIFS
 
+
 %kkkk(SP);
 %get_gif_by_deadtime(SP);
 %get_gif_by_interp_method(SP);
@@ -77,7 +78,8 @@ SP = SP.points_to_plot_by_frequency();
 %plot_graphs_with_filter(SP); %(20 seconds)
 %plot_graphs_with_mask(SP); %(5 seconds)
 %plot_best_ssim_by_ratio_window(SP);
-%plot_spectrogram(SP);
+plot_spectrogram(SP);
+plot_best_hyperspectral_images(SP);
 %save_graphs_as_PDF(SP); %(12 seconds)
 %save_raman_spectrum_as_PDF(SP);
 %save_windows_by_ratio_as_gif(SP);
@@ -89,6 +91,6 @@ SP = SP.points_to_plot_by_frequency();
 %y = get_best_ratio_window_by_frequency(SP); %(10 sec)
 
 %Save the txt with the results of filters (30 sec).
-get_txt_best_filter_by_ssim(SP);
+%get_txt_best_filter_by_ssim(SP);
 
 

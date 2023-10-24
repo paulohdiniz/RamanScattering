@@ -17,24 +17,45 @@ function plot_spectrogram(SP)
     t_in_ps = t.*1E12;
 
     name_of_figure = append('Exp : ', string(SP.xp_number));
-    h1 = figure('Position', [50 100 500 800],'Name', name_of_figure);
+    h1 = figure('Position', [50 100 1400 900],'Name', name_of_figure);
+
+    subplot(4,9,[1,2,3])
+        pspectrum(temp_data,temp_t, Leakage=0.5,FrequencyLimits=[0,freqLim*100*SP.c])
+        subtitle("Leakage: 0.5")
+    subplot(4,9,[4,5,6])
+        pspectrum(temp_data,temp_t, Leakage=0.75,FrequencyLimits=[0,freqLim*100*SP.c])
+        subtitle("Leakage: 0.75")
+        ylabel('')
+    subplot(4,9,[7,8,9])
+        pspectrum(temp_data,temp_t, Leakage=1,FrequencyLimits=[0,freqLim*100*SP.c])
+        ylabel('')
+        subtitle("Leakage: 1")
     %Pos1
-    subplot(3,4,[1,2,3,4])
+    subplot(4,9,[10,11,12,13])
         pspectrum(temp_data,SP.Fs,"spectrogram", ...
         TimeResolution=M/SP.Fs,OverlapPercent=L/M*100, ...
         Leakage=0.7 ...
         ,FrequencyLimits=[0,freqLim*100*SP.c])
         title("pspectrum")
+        %ylabel('Wavenumbers [cm^{-1}]','fontsize',8);
         axis image
+
+    subplot(4,9,[15,16,17,18])
+        pspectrum(temp_data,SP.Fs,"persistence", ...
+        TimeResolution=M/SP.Fs,OverlapPercent=L/M*100, ...
+        Leakage=0.7 ...
+        ,FrequencyLimits=[0,freqLim*100*SP.c])
+        title("Persistence spectrum")
+        %xlabel('Wavenumbers [cm^{-1}]','fontsize',8);
     %Pos2
-    subplot(3,4,[5,6,7,8])
+    subplot(4,9,[19,20,21,22,28,29,30,31])
         waterplot(s,f_in_cm,t_in_ps)
-    subplot(3,4,[9,10,11,12])
+    subplot(4,9,[24,25,26,27,33,34,35,36])
         %Compute Segment PSDs and Power Spectra
-        waterfall(f_in_cm,t_in_ps,abs(r)'.^2)
+        waterfall(f_in_cm,t_in_ps,abs(s)'.^2)
         set(gca,XScale="log",...
         XDir="reverse",View=[30 50], XLim=[0 freqLim] )
-        title('Power spectrum???','fontsize',8)
+        title('Power spectrum','fontsize',8)
         xlabel('Wavenumbers [cm^{-1}]','fontsize',8);
         ylabel('delay [ps]','fontsize',8)
         zlabel('????? [u.a]','fontsize',8)

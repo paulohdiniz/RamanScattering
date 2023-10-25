@@ -1,11 +1,11 @@
 close all
 clear variables 
 %cd('/Users/paulohd/Desktop/PauloDiniz')
-cd('C:\Users\phdin\Desktop\Data_Paulo\210507') % '210306' (xp 29, 30), 2ele
+cd('C:\Users\phdin\Desktop\PauloDiniz\210619(1samp)') % '210306' (xp 29, 30), 2ele
                                                % '210507' (xp 41, 15, 16, 17) 2ele
                                                % '210617' (xp 4, 19), 1 ele
-%addpath('/Users/paulohd/Desktop/PauloDiniz')  %210619 xp 10 pour analyser
-addpath('C:\Users\phdin\Desktop\Data_Paulo\210507')
+%addpath('/Users/paulohd/Desktop/210619(1samp)')  %210619 xp 10 pour analyser
+addpath('C:\Users\phdin\Desktop\PauloDiniz\210619(1samp)')
 
 %% CODE FOR USING THE CLASS THAT MAKES THE SAME THING AS SID'S CODE
 
@@ -14,7 +14,7 @@ SP=Sid_Processing();
 SP.DCopt=1;
 
 % Choose the experiment, and load all the data from the correct folders
-SP=SP.choose_folders_load_data(41); 
+SP=SP.choose_folders_load_data(1); 
 
 % Put the parameters
 SP.tukey_window_param = 1;
@@ -78,8 +78,9 @@ SP = SP.points_to_plot_by_frequency();
 %plot_graphs_with_filter(SP); %(20 seconds)
 %plot_graphs_with_mask(SP); %(5 seconds)
 %plot_best_ssim_by_ratio_window(SP);
-plot_spectrogram(SP);
+%plot_spectrogram(SP);
 %plot_best_hyperspectral_images(SP);
+plot_images_with_filters_by_psnr(SP);
 %save_graphs_as_PDF(SP); %(12 seconds)
 %save_raman_spectrum_as_PDF(SP);
 %save_windows_by_ratio_as_gif(SP);

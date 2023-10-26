@@ -1,4 +1,4 @@
-function get_txt_by_windows(SPtemp)
+function save_txt_by_windows(SPtemp)
     
     fileID = fopen(append('infos_windows_exp',string(SPtemp.xp_number), '.txt'),'w');
     fprintf(fileID, 'Analysis date: %s \n', datetime("now"));

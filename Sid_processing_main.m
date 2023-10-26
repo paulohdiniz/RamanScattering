@@ -1,11 +1,11 @@
 close all
 clear variables 
 %cd('/Users/paulohd/Desktop/PauloDiniz')
-cd('C:\Users\phdin\Desktop\PauloDiniz\210619(1samp)') % '210306' (xp 29, 30), 2ele
+cd('C:\Users\phdin\Desktop\Data_Paulo\210507\') % '210306' (xp 29, 30), 2ele
                                                % '210507' (xp 41, 15, 16, 17) 2ele
                                                % '210617' (xp 4, 19), 1 ele
 %addpath('/Users/paulohd/Desktop/210619(1samp)')  %210619 xp 10 pour analyser
-addpath('C:\Users\phdin\Desktop\PauloDiniz\210619(1samp)')
+addpath('C:\Users\phdin\Desktop\Data_Paulo\210507\')
 
 %% CODE FOR USING THE CLASS THAT MAKES THE SAME THING AS SID'S CODE
 
@@ -14,7 +14,7 @@ SP=Sid_Processing();
 SP.DCopt=1;
 
 % Choose the experiment, and load all the data from the correct folders
-SP=SP.choose_folders_load_data(1); 
+SP=SP.choose_folders_load_data(41); 
 
 % Put the parameters
 SP.tukey_window_param = 1;
@@ -57,9 +57,6 @@ SP = SP.points_to_plot_by_frequency();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%GIFS
-
-
-%kkkk(SP);
 %get_gif_by_deadtime(SP);
 %get_gif_by_interp_method(SP);
 %get_gif_by_ratiotukey(SP);
@@ -67,31 +64,35 @@ SP = SP.points_to_plot_by_frequency();
 %get_gif_by_windows(SP);
 %get_infos_by_windows(SP);
 
+
 %get_model(SP);
 %get_time_spec_from_peaks_by_ifft(SP);
 
-
-%PLOT 
-%get_time_spec_from_peaks_by_ifft(SP);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%PLOT 
 %plot_graphs(SP); %(5 seconds)
 %plot_graphs_with_transmission(SP);
-%plot_graphs_with_filter(SP); %(20 seconds)
 %plot_graphs_with_mask(SP); %(5 seconds)
 %plot_best_ssim_by_ratio_window(SP);
 %plot_spectrogram(SP);
 %plot_best_hyperspectral_images(SP);
 plot_images_with_filters_by_psnr(SP);
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%SAVE
 %save_graphs_as_PDF(SP); %(12 seconds)
 %save_raman_spectrum_as_PDF(SP);
 %save_windows_by_ratio_as_gif(SP);
-
+%save_txt_by_windows(SP);
+%save_txt_best_filter_by_ssim(SP);
+%save_txt_best_filter_by_brisque(SP);
 
 
 %RATIO WINDOW
 %x = get_best_ratio_window_by_ssim(SP); %(1 min)
 %y = get_best_ratio_window_by_frequency(SP); %(10 sec)
 
-%Save the txt with the results of filters (30 sec).
-%get_txt_best_filter_by_ssim(SP);
+
 
 

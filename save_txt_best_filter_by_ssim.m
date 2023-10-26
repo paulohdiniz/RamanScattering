@@ -1,4 +1,4 @@
-function get_txt_best_filter_by_ssim(SP)
+function save_txt_best_filter_by_ssim(SP)
             matrix_img_ref = SP.IP.mat_ref;
             cell_with_imgs_wn = SP.IP.mat_img_wn(SP.pixels_plot([1 2 3]));
 
@@ -113,52 +113,6 @@ function get_txt_best_filter_by_ssim(SP)
                     end
                 end
                 fprintf(fileID, 'GAUSSIEN1_FILTER: The best delta_ssim to image %d has the size filter [%d %d] and sigma %.2f. Before SSIM: %.4f. After SSIM: %.4f. Diff = %.2f%% \n', k, best_i, best_i, best_sigma, SP.IP.ssim_wn(SP.pixels_plot(k)), best_ssim_temp, best_delta_ssim_temp*100/SP.IP.ssim_wn(SP.pixels_plot(k)));
-                best_ssim_temp = -1; 
-                best_delta_ssim_temp = 0;
-            end
-
-            %GAUSSIEN2
-            best_ssim_temp = -1;
-            delta_ssim_temp = 0;
-            best_delta_ssim_temp = 0;
-            best_i = 1;
-            for k=1:numel(cell_with_imgs_wn)
-                for i=0.1:0.05:5
-                    img_filtered_temp = SP.IP.gaussian2_filter(cell_with_imgs_wn{k}, i, i);
-                    ssim_temp = ssim(img_filtered_temp,matrix_img_ref);
-                    if (ssim_temp > SP.IP.ssim_wn(SP.pixels_plot(k)))
-                        delta_ssim_temp = (ssim_temp - SP.IP.ssim_wn(SP.pixels_plot(k)));
-                        if (delta_ssim_temp > best_delta_ssim_temp)
-                            best_ssim_temp = ssim_temp;
-                            best_delta_ssim_temp = delta_ssim_temp;
-                            best_i = i;
-                        end
-                    end
-                end
-                fprintf(fileID, 'GAUSSIEN2_FILTER: The best delta_ssim to image %d has the sigma [%.2f %.2f]. Before SSIM: %.4f. After SSIM: %.4f. Diff = %.2f%% \n',  k, best_i, best_i, SP.IP.ssim_wn(SP.pixels_plot(k)), best_ssim_temp, best_delta_ssim_temp*100/SP.IP.ssim_wn(SP.pixels_plot(k)));
-                best_ssim_temp = -1; 
-                best_delta_ssim_temp = 0;
-            end
-
-            %MODE FILTER
-            best_ssim_temp = -1;
-            delta_ssim_temp = 0;
-            best_delta_ssim_temp = 0;
-            best_i = 1;
-            for k = 1:numel(cell_with_imgs_wn)
-                for i = 1:2:11 %vector of positive odd integers
-                    img_filtered_temp = SP.IP.mode_filter(cell_with_imgs_wn{k}, [i i]);
-                    ssim_temp = ssim(img_filtered_temp,matrix_img_ref);
-                    if (ssim_temp > SP.IP.ssim_wn(SP.pixels_plot(k)))
-                        delta_ssim_temp = (ssim_temp - SP.IP.ssim_wn(SP.pixels_plot(k)));
-                        if (delta_ssim_temp > best_delta_ssim_temp)
-                            best_ssim_temp = ssim_temp;
-                            best_delta_ssim_temp = delta_ssim_temp;
-                            best_i = i;
-                        end
-                    end
-                end
-                fprintf(fileID, 'MODE_FILTER: The best delta_ssim to image %d has the size filter [%d %d]. Before SSIM: %.4f. After SSIM: %.4f. Diff = %.2f%% \n',  k, best_i, best_i, SP.IP.ssim_wn(SP.pixels_plot(k)), best_ssim_temp, best_delta_ssim_temp*100/SP.IP.ssim_wn(SP.pixels_plot(k)));
                 best_ssim_temp = -1; 
                 best_delta_ssim_temp = 0;
             end

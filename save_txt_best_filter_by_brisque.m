@@ -1,4 +1,4 @@
-function get_txt_best_filter_by_brisque(SP)
+function save_txt_best_filter_by_brisque(SP)
             cell_with_imgs_wn = SP.IP.mat_img_wn(SP.pixels_plot([1 2 3]));
 
             %TXT WITH RESULTS

@@ -18,8 +18,10 @@ SP=SP.choose_folders_load_data(41);
 
 % Put the parameters
 SP.tukey_window_param = 1;
-SP.deadtime=110; %110
-SP.window2_name = 'blackman'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
+
+SP.pourc_width_peak_impulsion=100;
+
+SP.window2_name = 'rectwin'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
                         % chebwin, flattopwin, gausswin, hamming, hann,
                         % kaiser, nuttallwin, parzenwin, rectwin,
                         % taylorwin, tukeywin,tukeywinINV, triang, ones
@@ -56,7 +58,7 @@ SP = SP.points_to_plot_by_frequency();
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%GIFS
+%% GIFS
 %get_gif_by_deadtime(SP);
 %get_gif_by_interp_method(SP);
 %get_gif_by_ratiotukey(SP);
@@ -69,18 +71,18 @@ SP = SP.points_to_plot_by_frequency();
 %get_time_spec_from_peaks_by_ifft(SP);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%PLOT 
-%plot_graphs(SP); %(5 seconds)
+%% PLOT 
+plot_graphs(SP); %(5 seconds)
 %plot_graphs_with_transmission(SP);
 %plot_graphs_with_mask(SP); %(5 seconds)
 %plot_best_ssim_by_ratio_window(SP);
 %plot_spectrogram(SP);
 %plot_best_hyperspectral_images(SP);
-plot_images_with_filters_by_psnr(SP);
+%plot_images_with_filters_by_psnr(SP);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%SAVE
+%% SAVE
 %save_graphs_as_PDF(SP); %(12 seconds)
 %save_raman_spectrum_as_PDF(SP);
 %save_windows_by_ratio_as_gif(SP);

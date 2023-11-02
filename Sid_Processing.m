@@ -84,7 +84,8 @@ classdef Sid_Processing
         ratio_window
         tukey_window_param
         deadtime
-
+        pourc_width_peak_impulsion;
+        
         %image processing
         IP = Image_Processing();
 
@@ -175,31 +176,44 @@ classdef Sid_Processing
 
         end
 
-        function Sid_Processing=window_overlap(Sid_Processing,tukey_window_param,deadtime)
-            % We kill the overlap with a half tukey window of the parameter specified
+        function Sid_Processing=window_overlap(Sid_Processing,tukey_window_param, pourc_width)
+            Total_delay=1/Sid_Processing.Clock_Freq*Sid_Processing.N_t*Sid_Processing.DazzlerTimeConversion;
+            time_axis=0:Total_delay/(Sid_Processing.N_t-1):Total_delay;
+
+            first_signal_raw = sum(sum(Sid_Processing.data_raw(1).data_R,2),3);
             signal=sum(sum(Sid_Processing.data_raw(1).data_R,2),3);
+            
+            first_signal_raw = abs(cumtrapz(first_signal_raw)).^2;
+            
+            [~,xPeaks, widths, ~] = findpeaks(first_signal_raw,time_axis,'SortStr','descend',...
+                            'MinPeakDistance',3e-12);
+            
+            maxWidthPeak = widths(1);
+            time_peak = xPeaks(1);
             answer={};
-            deadtime2=deadtime;
             while ~any(cellfun(@(x) (strcmp(x,'yes')),answer))
-                window=[zeros(deadtime2,1).' tukeywin(Sid_Processing.N_t - deadtime2,tukey_window_param).' ].'; %TO DO: voir avec sam
-                window=window(1:Sid_Processing.N_t); 
+
+                time_to_zero = time_peak + maxWidthPeak*pourc_width/100;
+                dead_points = round((time_to_zero/max(time_axis))*numel(time_axis));
+                window=[zeros(dead_points,1).' tukeywin(Sid_Processing.N_t - dead_points,tukey_window_param).' ].'; %TO DO: voir avec sam
+    
+                window=window(1:Sid_Processing.N_t);
                 figure(101),clf,
                 plot(signal./max(signal))
                 hold on,plot((signal.*window)./max(signal.*window))
                 hold on, plot(window./max(window))
-                prompt = {'Deadtime:','Is the windowing ok ?'};
+                prompt = {'Pourcentage of width:','Is the windowing ok ?'};
                 dlgtitle = 'Input';
                 dims = [1 35];
-                definput = {num2str(deadtime2),'no'};
+                definput = {num2str(pourc_width),'no'};
                 options.Resize='on';
                 options.WindowStyle='normal';
                 options.Interpreter='tex';
                 answer = inputdlg(prompt,dlgtitle,dims,definput,options);
-                deadtime2=str2double(answer{1});
-                tempDeadtime = deadtime2;
+                pourc_width=str2double(answer{1});
             end
             close(101)
-            Sid_Processing.deadtime = tempDeadtime;
+            Sid_Processing.pourc_width_peak_impulsion = pourc_width;
 
             % THEN AND STITICHING
             for tt=1:size(Sid_Processing.data_raw,2)
@@ -213,11 +227,27 @@ classdef Sid_Processing
             end
         end
 
-        function Sid_Processing=window_overlap_to_test(Sid_Processing,tukey_window_param,deadtime) %just for testing
-            % We kill the overlap with a half tukey window of the parameter specified
-            deadtime2=deadtime;
-            window=[zeros(deadtime2,1).' tukeywin(Sid_Processing.N_t - deadtime2,tukey_window_param).' ].'; %TO DO: voir avec sam
+        function Sid_Processing=window_overlap_to_test(Sid_Processing,tukey_window_param, pourc_width) %just for testing
+
+            Total_delay=1/Sid_Processing.Clock_Freq*Sid_Processing.N_t*Sid_Processing.DazzlerTimeConversion;
+            time_axis=0:Total_delay/(Sid_Processing.N_t-1):Total_delay;
+
+            first_signal_raw = sum(sum(Sid_Processing.data_raw(1).data_R,2),3);
+            
+            first_signal_raw = abs(cumtrapz(first_signal_raw)).^2;
+            
+            [~,xPeaks, widths, ~] = findpeaks(first_signal_raw,time_axis,'SortStr','descend',...
+                            'MinPeakDistance',3e-12);
+            
+            maxWidthPeak = widths(1);
+            time_peak = xPeaks(1);
+
+            time_to_zero = time_peak + maxWidthPeak*pourc_width/100;
+            dead_points = round((time_to_zero/max(time_axis))*numel(time_axis));
+            window=[zeros(dead_points,1).' tukeywin(Sid_Processing.N_t - dead_points,tukey_window_param).' ].'; 
             window=window(1:Sid_Processing.N_t);
+
+            Sid_Processing.pourc_width_peak_impulsion = pourc_width;
             
             % THEN AND STITICHING
             for tt=1:size(Sid_Processing.data_raw,2)
@@ -644,6 +674,7 @@ classdef Sid_Processing
             newSP.ratio_window=obj.ratio_window;
             newSP.tukey_window_param=obj.tukey_window_param;
             newSP.deadtime=obj.deadtime;
+            newSP.pourc_width_peak_impulsion = obj.pourc_width_peak_impulsion;
             newSP.IP = obj.IP;
             newSP.name_pdf = obj.name_pdf;
             newSP.signalIFFT = obj.signalIFFT;

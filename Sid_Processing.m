@@ -83,8 +83,10 @@ classdef Sid_Processing
         window2_name
         ratio_window
         tukey_window_param
-        deadtime
-        pourc_width_peak_impulsion;
+
+        %Impulsion Pulse
+        pourc_pulse_width;
+        dead_points;
         
         %image processing
         IP = Image_Processing();
@@ -213,7 +215,7 @@ classdef Sid_Processing
                 pourc_width=str2double(answer{1});
             end
             close(101)
-            Sid_Processing.pourc_width_peak_impulsion = pourc_width;
+            Sid_Processing.pourc_pulse_width = pourc_width;
 
             % THEN AND STITICHING
             for tt=1:size(Sid_Processing.data_raw,2)
@@ -243,11 +245,11 @@ classdef Sid_Processing
             time_peak = xPeaks(1);
 
             time_to_zero = time_peak + maxWidthPeak*pourc_width/100;
-            dead_points = round((time_to_zero/max(time_axis))*numel(time_axis));
-            window=[zeros(dead_points,1).' tukeywin(Sid_Processing.N_t - dead_points,tukey_window_param).' ].'; 
+            Sid_Processing.dead_points = round((time_to_zero/max(time_axis))*numel(time_axis));
+            window=[zeros(Sid_Processing.dead_points,1).' tukeywin(Sid_Processing.N_t - Sid_Processing.dead_points,tukey_window_param).' ].'; 
             window=window(1:Sid_Processing.N_t);
 
-            Sid_Processing.pourc_width_peak_impulsion = pourc_width;
+            Sid_Processing.pourc_pulse_width = pourc_width;
             
             % THEN AND STITICHING
             for tt=1:size(Sid_Processing.data_raw,2)
@@ -261,7 +263,7 @@ classdef Sid_Processing
             end
         end
 
-        function Sid_Processing=Tnorm_and_center_data(Sid_Processing,norm,center,deadtime) % TO DO
+        function Sid_Processing=Tnorm_and_center_data(Sid_Processing,norm,center) % TO DO
 
             if norm
                 for tt=1:size(Sid_Processing.data_processed,2)
@@ -281,7 +283,7 @@ classdef Sid_Processing
                     %                     overall_mean=(mean(Sid_Processing.data_processed(tt).data_R(:)));
                     Sid_Processing.data_processed(tt).data_R=Sid_Processing.data_processed(tt).data_R-mean_per_pixel;
                 end
-                Sid_Processing.data_processed(1).data_R=Sid_Processing.data_processed(1).data_R-mean(Sid_Processing.data_processed(1).data_R(1:deadtime-10));
+                Sid_Processing.data_processed(1).data_R=Sid_Processing.data_processed(1).data_R-mean(Sid_Processing.data_processed(1).data_R(1:Sid_Processing.dead_points-10));
             end
         end
 
@@ -427,13 +429,12 @@ classdef Sid_Processing
             Sid_Processing=SamplingFrequency(Sid_Processing,time_vec);
 
             NFFT = 2^(nextpow2(size(Data_vec,1))+1);
-    
             ReducedMeanSignal = bsxfun(@minus,Data_vec,mean(Data_vec,1));
             Y = (1/Sid_Processing.Fs)*(fft(ReducedMeanSignal,NFFT,1));
-            varTEMP = fft(ReducedMeanSignal,NFFT,1); %TODO:TEST
+
             F = (((0:1/NFFT:1-1/NFFT)*Sid_Processing.Fs).');
             Sid_Processing.wn = fftshift(F-Sid_Processing.Fs/2);
-            Sid_Processing.wn = Sid_Processing.wn(1:ceil(length(Sid_Processing.wn)/2))/3e8/100; %remove the negatives and put them in the unit cm^-1
+            Sid_Processing.wn = Sid_Processing.wn(1:ceil(length(Sid_Processing.wn)/2))/Sid_Processing.c/100; %remove the negatives and put them in the unit cm^-1
             Sid_Processing.hyperspectralRamanImageComplex = Y;
 
         end
@@ -673,8 +674,7 @@ classdef Sid_Processing
             newSP.window2_name=obj.window2_name;
             newSP.ratio_window=obj.ratio_window;
             newSP.tukey_window_param=obj.tukey_window_param;
-            newSP.deadtime=obj.deadtime;
-            newSP.pourc_width_peak_impulsion = obj.pourc_width_peak_impulsion;
+            newSP.pourc_pulse_width = obj.pourc_pulse_width;
             newSP.IP = obj.IP;
             newSP.name_pdf = obj.name_pdf;
             newSP.signalIFFT = obj.signalIFFT;

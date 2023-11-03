@@ -19,7 +19,7 @@ SP=SP.choose_folders_load_data(41);
 % Put the parameters
 SP.tukey_window_param = 1;
 
-SP.pourc_width_peak_impulsion=100;
+SP.pourc_pulse_width=100;
 
 SP.window2_name = 'rectwin'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
                         % chebwin, flattopwin, gausswin, hamming, hann,
@@ -32,11 +32,11 @@ SP.ratio_window = 1;%get_best_ratio_window_by_frequency(SP); % after tukey and d
 %SP.ratio_window = get_best_ratio_window_by_ssim(SP); % after tukey and deadtime
 
 % Removes the large curve before the sinusoidal
-SP=SP.window_overlap_to_test(SP.tukey_window_param,SP.deadtime);
-%SP=SP.window_overlap(SP.tukey_window_param,SP.deadtime); %change de 
+SP=SP.window_overlap_to_test(SP.tukey_window_param,SP.pourc_pulse_width);
+%SP=SP.window_overlap(SP.tukey_window_param,SP.pourc_pulse_width); %change de 
 
 % Normalizes and centers the data
-SP=SP.Tnorm_and_center_data(1,0,SP.deadtime);
+SP=SP.Tnorm_and_center_data(1,0);
 
 % Chosen interpolation type
 SP=SP.stitch_time_axis_T_with_interp(SP.interp_method);
@@ -59,20 +59,20 @@ SP = SP.points_to_plot_by_frequency();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% GIFS
-%get_gif_by_deadtime(SP);
+%get_gif_by_pourc_pulse_width(SP);
 %get_gif_by_interp_method(SP);
 %get_gif_by_ratiotukey(SP);
 %get_gif_by_ratiowindow(SP);
 %get_gif_by_windows(SP);
 %get_infos_by_windows(SP);
 
-
+get_time_spec_from_peaks_by_ifft(SP);
 %get_model(SP);
 %get_time_spec_from_peaks_by_ifft(SP);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% PLOT 
-plot_graphs(SP); %(5 seconds)
+%plot_graphs(SP); %(5 seconds)
 %plot_graphs_with_transmission(SP);
 %plot_graphs_with_mask(SP); %(5 seconds)
 %plot_best_ssim_by_ratio_window(SP);
@@ -85,7 +85,6 @@ plot_graphs(SP); %(5 seconds)
 %% SAVE
 %save_graphs_as_PDF(SP); %(12 seconds)
 %save_raman_spectrum_as_PDF(SP);
-%save_windows_by_ratio_as_gif(SP);
 %save_txt_by_windows(SP);
 %save_txt_best_filter_by_ssim(SP);
 %save_txt_best_filter_by_brisque(SP);

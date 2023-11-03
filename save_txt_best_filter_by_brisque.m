@@ -8,7 +8,7 @@ function save_txt_best_filter_by_brisque(SP)
             fprintf(fileID, 'Folder path : %s \n', string(pwd));
             fprintf(fileID, 'Experiment number: %d \n', SP.xp_number);
             fprintf(fileID, 'Tukey Window parameter: %f \n', SP.tukey_window_param);
-            fprintf(fileID, 'Deadtime: %f \n', SP.deadtime);
+            fprintf(fileID, 'Pourc pulse width: %f \n', SP.pourc_pulse_width);
             fprintf(fileID, 'Window type: %s \n', SP.window2_name);
             fprintf(fileID, 'Ratio Window: %f \n', SP.ratio_window);
             fprintf(fileID, 'Peaks in order: %d, %d, %d, %d, %d \n', SP.pixels_plot(1), SP.pixels_plot(2), SP.pixels_plot(3));

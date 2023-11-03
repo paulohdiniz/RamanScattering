@@ -6,8 +6,8 @@ function plot_images_with_filters_by_psnr(SP)
     for i=1:numel(t_values_for_stop)
         SPs(i) = SP.copy(); %copying the data internally is much faster than loading all the files every time
         SPs(i).ratio_window = t_values_for_stop(i)/max(SPs(i).data_stitched.t_stitched);
-        SPs(i) = SPs(i).window_overlap_to_test(SPs(i).tukey_window_param,SPs(i).deadtime);
-        SPs(i) = SPs(i).Tnorm_and_center_data(1,0,SPs(i).deadtime);
+        SPs(i) = SPs(i).window_overlap_to_test(SPs(i).tukey_window_param,SPs(i).pourc_pulse_width);
+        SPs(i) = SPs(i).Tnorm_and_center_data(1,0);
         SPs(i) = SPs(i).stitch_time_axis_T_with_interp(SPs(i).interp_method);
         SPs(i) = SPs(i).pick_fourier_window(SPs(i).window2_name); 
         SPs(i) = SPs(i).FT(SPs(i).data_stitched.t_stitched, permute(SPs(i).data_stitched.data_R,[3 1 2]).*repmat(SPs(i).window2.',[1 50 50])); % wavenumbers are in cm^-1, Raman SP(i)ectrum is arbitrary units

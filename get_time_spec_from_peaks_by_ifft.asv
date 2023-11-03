@@ -28,8 +28,8 @@ function signalIFFT = get_time_spec_from_peaks_by_ifft(SP)
 
         signalIFFT(i).signal = ifft(temp.*SP.hyperspectralRamanImageComplex, NFFT, 1);
 
-        % tempo = filter_window(i).wn(2)*100*SP.c - filter_window(i).wn(1)*100*SP.c;
-        % signalIFFT(i).tempo_axis = ifft(SP.wn, NFFT, 1);
+        tempo = filter_window(i).wn(2)*100*SP.c - filter_window(i).wn(1)*100*SP.c;
+        signalIFFT(i).tempo_axis = ifft(SP.wn, NFFT, 1);
 
         %figure,plot(squeeze(mean(real(signalIFFT(i).signal),[2 3])))
 

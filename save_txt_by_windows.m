@@ -6,7 +6,7 @@ function save_txt_by_windows(SPtemp)
     fprintf(fileID, 'Folder path : %s \n', string(pwd));
     fprintf(fileID, 'Experiment number: %d \n', SPtemp.xp_number);
     fprintf(fileID, 'Tukey Window parameter: %.4f \n', SPtemp.tukey_window_param);
-    fprintf(fileID, 'Deadtime: %.4f \n', SPtemp.deadtime);
+    fprintf(fileID, 'Pourc pulse width: %.4f \n', SPtemp.pourc_pulse_width);
     fprintf(fileID, '\n');
     windows = {'barthannwin', 'bartlett', 'blackman', 'blackmanharris', ...
                 'bohmanwin', 'chebwin', 'flattopwin', 'gausswin', 'hamming', ...
@@ -16,8 +16,8 @@ function save_txt_by_windows(SPtemp)
     for i = 1:length(windows)
         SP(i) = SPtemp.copy(); %copying the data internally is much faster than loading all the files every time
         SP(i).window2_name = windows{i};
-        SP(i) = SP(i).window_overlap_to_test(SP(i).tukey_window_param,SP(i).deadtime);
-        SP(i) = SP(i).Tnorm_and_center_data(1,0,SP(i).deadtime);
+        SP(i) = SP(i).window_overlap_to_test(SP(i).tukey_window_param,SP(i).pourc_pulse_width);
+        SP(i) = SP(i).Tnorm_and_center_data(1,0);
         SP(i) = SP(i).stitch_time_axis_T_with_interp(SP(i).interp_method);
         SP(i) = SP(i).pick_fourier_window(SP(i).window2_name); 
         SP(i) = SP(i).FT(SP(i).data_stitched.t_stitched, permute(SP(i).data_stitched.data_R,[3 1 2]).*repmat(SP(i).window2.',[1 50 50])); % wavenumbers are in cm^-1, Raman SP(i)ectrum is arbitrary units

@@ -1,6 +1,6 @@
-function create_gif_with_ifft(SP, type_gif)
+function plot_graphs_with_ifft(SP)
     name_of_figure = append('Exp : ', string(SP.xp_number));
-    h1 = figure('Position', [50 100 1300 800], 'visible','off','Name', name_of_figure);
+    h1 = figure('Position', [50 100 1300 800],'Name', name_of_figure);
     
     subplot(6,4,[1,2,5,6,9,10]);
 
@@ -64,13 +64,21 @@ function create_gif_with_ifft(SP, type_gif)
         ['Image at ' num2str(SP.wn(SP.pixels_plot(3))) 'cm^{-1}'] 
         [ 'SSIM: ' num2str(SP.IP.ssim_wn(SP.pixels_plot(3)))]
         },'fontsize',8);
-    
+
+    time_half_axis = SP.data_stitched.t_stitched(1:floor(length(SP.data_stitched.t_stitched)/5)).*1E12;
+
     subplot(6,4, [3,7])
-    plot(squeeze(mean(real(SP.signalIFFT(1).signal),[2 3])))
+    plot(time_half_axis, squeeze(mean(real(SP.signalIFFT(1).signal(1:length(time_half_axis),:,:)),[2 3])))
+    xlabel('ps','fontsize',8, 'Position', [1, -0.1, 0]);
+
     subplot(6,4, [11,15])
-    plot(squeeze(mean(real(SP.signalIFFT(2).signal),[2 3])))
+    plot(time_half_axis, squeeze(mean(real(SP.signalIFFT(2).signal(1:length(time_half_axis),:,:)),[2 3])))
+    xlabel('ps','fontsize',8);
+
     subplot(6,4, [19,23])
-    plot(squeeze(mean(real(SP.signalIFFT(3).signal),[2 3])))
+    plot(time_half_axis, squeeze(mean(real(SP.signalIFFT(3).signal(1:length(time_half_axis),:,:)),[2 3])))
+    xlabel('ps','fontsize',8);
+
     %Putting Parameters
     han=axes(h1,'visible','off');
     han.YLabel.Visible='on';
@@ -90,23 +98,5 @@ function create_gif_with_ifft(SP, type_gif)
         'VerticalAlignment','bottom');
     han.Position(1) = han.Position(1) - abs(han.Position(1) * 0.8); %horizontal indent
 
-    % Spécifiez le nom du dossier que vous souhaitez créer ou vérifier
-    folderName = append('XP',string(SP.xp_number),'(gif-', type_gif, ')');
-    
-    % Vérifiez si le dossier existe déjà
-    if exist(folderName, 'dir') == 0
-        % Le dossier n'existe pas, alors créez-le
-        mkdir(folderName);
-    end
-
-    if (isempty(SP.name_pdf))
-        SP.name_pdf = string(SP.xp_number);
-    end
-
-    f=fullfile(folderName,append(SP.name_pdf,'-',SP.window2_name,'.gif'));    
-    if exist(f, 'file')
-            exportgraphics(h1,f,"Append",true);
-        else
-            exportgraphics(h1,f);
-    end
 end
+

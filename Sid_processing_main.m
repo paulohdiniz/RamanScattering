@@ -32,8 +32,8 @@ SP.ratio_window = 1;%get_best_ratio_window_by_frequency(SP); % after tukey and d
 %SP.ratio_window = get_best_ratio_window_by_ssim(SP); % after tukey and deadtime
 
 % Removes the large curve before the sinusoidal
-SP=SP.window_overlap_to_test(SP.tukey_window_param,SP.pourc_pulse_width);
-%SP=SP.window_overlap(SP.tukey_window_param,SP.pourc_pulse_width); %change de 
+%SP=SP.window_overlap_to_test(SP.tukey_window_param,SP.pourc_pulse_width);
+SP=SP.window_overlap(SP.tukey_window_param,SP.pourc_pulse_width); %change de 
 
 % Normalizes and centers the data
 SP=SP.Tnorm_and_center_data(1,0);
@@ -69,15 +69,15 @@ SP.signalIFFT = get_signal_by_time_from_ifft(SP);
 %get_gif_by_windows(SP);
 %get_infos_by_windows(SP);
 
-get_signal_by_time_from_ifft(SP);
+%get_signal_by_time_from_ifft(SP);
 %get_model(SP);
-
+get_ref_spectra(SP);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% PLOT 
 %plot_graphs(SP); %(5 seconds)
 %plot_graphs_with_transmission(SP);
-%plot_graphs_with_mask(SP); %(5 seconds)
-plot_graphs_with_ifft(SP);
+%plot_graphs_with_roi(SP); %(5 seconds)
+%plot_graphs_with_ifft(SP);
 %plot_best_ssim_by_ratio_window(SP);
 %plot_spectrogram(SP);
 %plot_best_hyperspectral_images(SP);

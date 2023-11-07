@@ -1,4 +1,4 @@
-function plot_graphs_with_mask(SP)
+function plot_graphs_with_roi(SP)
 
     Total_delay=1/SP.Clock_Freq*SP.N_t*SP.DazzlerTimeConversion;
     time_axis=0:Total_delay/(SP.N_t-1):Total_delay;

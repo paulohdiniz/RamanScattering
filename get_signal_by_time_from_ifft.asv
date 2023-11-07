@@ -24,7 +24,7 @@ function signalIFFT = get_signal_by_time_from_ifft(SP)
         temp=ones(length(complete_filter(i).window),50,50);
         temp=bsxfun(@times,temp,complete_filter(i).window.');
         NFFT = 2^(nextpow2(size(temp,1))); 
-        t=(0:(NFFT-1))*(2/SP.Fs);
+        t=(0:(NFFT-1))*(1/SP.Fs);
 
         signalIFFT(i).signal = ifft(temp.*SP.hyperspectralRamanImageComplex(size(complete_filter(i).window(:),1),:,:), NFFT, 1);
         figure,plot(t(1:1024),real(squeeze(mean(signalIFFT(i).signal(1:1024,:,:),[2 3]))))

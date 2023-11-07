@@ -31,53 +31,17 @@ function plot_graphs_with_ifft(SP)
     text(-0.1,1.1,'','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',8)
     set(gca,'ytick',[]);
 
-    subplot(6,4,[4,8]);
-    imagesc(squeeze(abs(SP.hyperspectralRamanImageComplex(SP.pixels_plot(1),:,:))));
-    axis image
-    xlabel('pixels','fontsize',6);
-    ylabel('pixels','fontsize',6);
-    colorbar;
-    title({
-        ['Image at ' num2str(SP.wn(SP.pixels_plot(1))) 'cm^{-1}'] 
-        [ 'SSIM: ' num2str(SP.IP.ssim_wn(SP.pixels_plot(1)))]
-        },'fontsize',8);
-    colormap('hot')
-    
-    subplot(6,4,[12,16]);
-    imagesc(squeeze(abs(SP.hyperspectralRamanImageComplex(SP.pixels_plot(2),:,:))));
-    axis image
-    xlabel('pixels','fontsize',6);
-    ylabel('pixels','fontsize',6);
-    colorbar;
-    title({
-        ['Image at ' num2str(SP.wn(SP.pixels_plot(2))) 'cm^{-1}'] 
-        [ 'SSIM: ' num2str(SP.IP.ssim_wn(SP.pixels_plot(2)))]
-        },'fontsize',8);
-    
-    subplot(6,4,[20,24]);
-    imagesc(squeeze(abs(SP.hyperspectralRamanImageComplex(SP.pixels_plot(3),:,:))));
-    axis image
-    xlabel('pixels','fontsize',6);
-    ylabel('pixels','fontsize',6);
-    colorbar;
-    title({
-        ['Image at ' num2str(SP.wn(SP.pixels_plot(3))) 'cm^{-1}'] 
-        [ 'SSIM: ' num2str(SP.IP.ssim_wn(SP.pixels_plot(3)))]
-        },'fontsize',8);
-
     time_half_axis = SP.data_stitched.t_stitched(1:floor(length(SP.data_stitched.t_stitched)/5)).*1E12;
 
-    subplot(6,4, [3,7])
+    subplot(6,4, [3,4,7,8])
     plot(time_half_axis, squeeze(mean(real(SP.signalIFFT(1).signal(1:length(time_half_axis),:,:)),[2 3])))
-    xlabel('ps','fontsize',8, 'Position', [1, -0.1, 0]);
 
-    subplot(6,4, [11,15])
+    subplot(6,4, [11,12,15,16])
     plot(time_half_axis, squeeze(mean(real(SP.signalIFFT(2).signal(1:length(time_half_axis),:,:)),[2 3])))
-    xlabel('ps','fontsize',8);
 
-    subplot(6,4, [19,23])
+    subplot(6,4, [19,20,23,24])
     plot(time_half_axis, squeeze(mean(real(SP.signalIFFT(3).signal(1:length(time_half_axis),:,:)),[2 3])))
-    xlabel('ps','fontsize',8);
+    xlabel('ps','fontsize',10);
 
     %Putting Parameters
     han=axes(h1,'visible','off');

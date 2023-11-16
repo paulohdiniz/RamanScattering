@@ -5,7 +5,7 @@ cd('C:\Users\phdin\Desktop\Data_Paulo\210306\') % '210306' (xp 29, 30), 2ele
                                                % '210507' (xp 41, 15, 16, 17) 2ele
                                                % '210617' (xp 4, 19), 1 ele
 %addpath('/Users/paulohd/Desktop/210619(1samp)')  %210619 xp 10 pour analyser
-addpath('C:\Users\phdin\Desktop\Data_Paulo\210306\')
+addpath('C:\Users\phdin\Desktop\PauloDiniz')
 
 %% CODE FOR USING THE CLASS THAT MAKES THE SAME THING AS SID'S CODE
 
@@ -32,8 +32,8 @@ SP.ratio_window = 1;%get_best_ratio_window_by_frequency(SP); % after tukey and d
 %SP.ratio_window = get_best_ratio_window_by_ssim(SP); % after tukey and deadtime
 
 % Removes the large curve before the sinusoidal
-%SP=SP.window_overlap_to_test(SP.tukey_window_param,SP.pourc_pulse_width);
-SP=SP.window_overlap(SP.tukey_window_param,SP.pourc_pulse_width); %change de 
+SP=SP.window_overlap_to_test(SP.tukey_window_param,SP.pourc_pulse_width);
+%SP=SP.window_overlap(SP.tukey_window_param,SP.pourc_pulse_width); %change de 
 
 % Normalizes and centers the data
 SP=SP.Tnorm_and_center_data(1,0);
@@ -71,7 +71,8 @@ SP.signalIFFT = get_signal_by_time_from_ifft(SP);
 
 %get_signal_by_time_from_ifft(SP);
 %get_model(SP);
-get_ref_spectra(SP);
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% PLOT 
 %plot_graphs(SP); %(5 seconds)
@@ -82,6 +83,7 @@ get_ref_spectra(SP);
 %plot_spectrogram(SP);
 %plot_best_hyperspectral_images(SP);
 %plot_images_with_filters_by_psnr(SP);
+plot_similar_pixels_from_rois(SP);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

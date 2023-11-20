@@ -19,10 +19,10 @@ function plot_similar_pixels_from_rois(SP)
     for ii=1:50
         for jj=1:50
             corr_pixel_to_1 = corr(squeeze(abs(SP.hyperspectralRamanImageComplex(1:200,ii,jj))),roi1(1:200));
-            pourc_discr_1(ii,jj) = (corr_pixel_to_1+1)*50; % pourcentage d'apparternir à 1
+            pourc_discr_1(ii,jj) = corr_pixel_to_1; 
     
             corr_pixel_to_2 = corr(squeeze(abs(SP.hyperspectralRamanImageComplex(1:200,ii,jj))),roi2(1:200));
-            pourc_discr_2(ii,jj) = (corr_pixel_to_2+1)*50; % pourcentage d'apparternir à 2
+            pourc_discr_2(ii,jj) = corr_pixel_to_2; 
             
         end
     end

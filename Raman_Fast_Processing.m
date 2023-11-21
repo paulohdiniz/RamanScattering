@@ -2,13 +2,13 @@ classdef Raman_Fast_Processing
 
     properties
 
-        %Basic Properties and On/Off buttons
+        % Basic Properties and On/Off buttons
         c=299792458;
         DazzlerTimeConversion= 161E-15/1E-6;
         DelayToStartFourier = 1.485e-12;%1.54 for CBZ-DH 1.339E-12
         DelayToEndFourier=15E-12;
 
-        %Parameters to find peaks
+        % Parameters to find peaks
         Max_wn_to_search_peaks = 250; % < 250cm^-1
         Min_wn_to_search_peaks = 5;   % > 5cm^-1
         MinPeakHeight = 0.05 ; %value normalized, so 5%
@@ -21,43 +21,43 @@ classdef Raman_Fast_Processing
         data_raw
         data_processed
 
-        %Image Parameters
+        % Image Parameters
         N_x
         N_y
         N_t
 
-        % interpolation
+        % Interpolation
         data_stitched
         t_interp
         data_interp
         window_interp=2
 
-        %FT
+        % FT
         hyperspectralRamanImageComplex
         wn
         ramanSpectrum
         ramanSpectrumWithMask
 
-        %Parameters of FFT and spectrogram
-        Fs %sampling frequency
+        % Parameters of FFT and spectrogram
+        Fs
 
-        %Properties of Raman Spectrum
+        % Properties of Raman Spectrum
         peakAmpli
         peakAmpli_wn
         peakWidth
         peakProm
 
-        %Plot
+        % Plot
         wns_plot
         pixels_plot
 
-        %Window
+        % Window
         window2
         window2_name
         ratio_window
         tukey_window_param
 
-        %Impulsion Pulse
+        % Impulsion Pulse
         pourc_pulse_width;
         dead_points;
        
@@ -74,7 +74,7 @@ classdef Raman_Fast_Processing
             
             first_signal_raw = abs(cumtrapz(first_signal_raw)).^2;
             
-            [~,xPeaks, widths, ~] = findpeaks(first_signal_raw,time_axis,'SortStr','descend',...
+            [~,xPeaks, widths] = findpeaks(first_signal_raw,time_axis,'SortStr','descend',...
                             'MinPeakDistance',3e-12);
             
             maxWidthPeak = widths(1);
@@ -141,9 +141,14 @@ classdef Raman_Fast_Processing
             t_ini=repmat(time_axis,1,size(Raman_Fast_Processing.delays,2));
             t_ini=t_ini+repelem(Raman_Fast_Processing.delays,264)*1e-12;
             t_out=0:Total_delay/(Raman_Fast_Processing.N_t-1):max(t_ini);
+            
+            % temp= makima(t_stitch,data_R_stitch,t_out);
+            % Raman_Fast_Processing.data_stitched.data_R = temp;
+            % Raman_Fast_Processing.data_stitched.t_stitched=t_out;
 
-            temp= makima(t_stitch,data_R_stitch,t_out);
-            Raman_Fast_Processing.data_stitched.data_R = temp;
+            %TODO: MAKE interpolation LINEAR !!!!!
+            temp2= interp1(t_stitch,permute(data_R_stitch, [3 1 2]),t_out,'linear','extrap');
+            Raman_Fast_Processing.data_stitched.data_R = permute(temp2,[3 2 1]);
             Raman_Fast_Processing.data_stitched.t_stitched=t_out;
 
         end
@@ -216,18 +221,6 @@ classdef Raman_Fast_Processing
                     %Tukey (tapered cosine) window
                 case 'tukeywin'
                     Raman_Fast_Processing.window2 = [tukeywin(round(Raman_Fast_Processing.ratio_window*length(Raman_Fast_Processing.data_stitched.t_stitched)),Raman_Fast_Processing.tukey_window_param).' zeros(1,round((1-Raman_Fast_Processing.ratio_window)*length(Raman_Fast_Processing.data_stitched.t_stitched)))];
-                
-                %Tukey (tapered cosine) window
-                case 'tukeywinINV'
-                    Raman_Fast_Processing.window2 = [zeros(1,round((1-Raman_Fast_Processing.ratio_window)*length(Raman_Fast_Processing.data_stitched.t_stitched))) tukeywin(round(Raman_Fast_Processing.ratio_window*length(Raman_Fast_Processing.data_stitched.t_stitched)),Raman_Fast_Processing.tukey_window_param).' ];
-                
-                %Triangular window
-                case 'triang'
-                    Raman_Fast_Processing.window2 = [triang(round(Raman_Fast_Processing.ratio_window*length(Raman_Fast_Processing.data_stitched.t_stitched))).' zeros(1,round((1-Raman_Fast_Processing.ratio_window)*length(Raman_Fast_Processing.data_stitched.t_stitched)))];
-                
-                case 'ones'
-                    Raman_Fast_Processing.window2 = [blackman(round(Raman_Fast_Processing.ratio_window*length(Raman_Fast_Processing.data_stitched.t_stitched))).' zeros(1,round((1-Raman_Fast_Processing.ratio_window)*length(Raman_Fast_Processing.data_stitched.t_stitched)))];
-                    Raman_Fast_Processing.window2=ones(size(Raman_Fast_Processing.window2));
                    
             end
             Raman_Fast_Processing.window2=Raman_Fast_Processing.window2(1:length(Raman_Fast_Processing.data_stitched.t_stitched));
@@ -337,7 +330,6 @@ classdef Raman_Fast_Processing
         end
 
         function Raman_Fast_Processing=make_raman_spectrum_with_mask(Raman_Fast_Processing, mask)
-        
             % we import a mask 50x50 com 1s and 0s, with the selection made for the user
             % we use the mask to remove these values on hyperspectral
             mask_expanded = repmat(mask, [1, 1, size(Raman_Fast_Processing.hyperspectralRamanImageComplex,1)]);

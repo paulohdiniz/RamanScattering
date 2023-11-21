@@ -6,15 +6,9 @@ function plot_similar_pixels_from_rois(SP)
     SP = SP.make_raman_spectrum_with_mask(mask);
     roi1= SP.ramanSpectrumWithMask;
 
-    [~,wn_max_roi1] = findpeaks(roi1,SP.wn,'SortStr','descend',...
-                            'MinPeakDistance',SP.wn(end-1));
-
     mask2 = roipoly;
     SP = SP.make_raman_spectrum_with_mask(mask2);
     roi2= SP.ramanSpectrumWithMask;
-
-    [~,wn_max_roi2] = findpeaks(roi2,SP.wn,'SortStr','descend',...
-                            'MinPeakDistance',SP.wn(end-1));
 
     for ii=1:50
         for jj=1:50

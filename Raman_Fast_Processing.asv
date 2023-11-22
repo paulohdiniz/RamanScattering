@@ -73,22 +73,20 @@ classdef Raman_Fast_Processing
             first_signal_raw = sum(sum(Raman_Fast_Processing.data_raw(1).data_R,2),3);
             
             first_signal_raw = abs(cumtrapz(first_signal_raw)).^2;
-            
-            % Fastest method to get the peak width
-            [~, maxIndex] = max(first_signal_raw);
+            tic
+            [~, maxIndex] = max(first_signal_raw); % yourData est votre tableau de données
             halfMax = 0.5 * first_signal_raw(maxIndex);
             indicesAboveHalfMax = first_signal_raw >= halfMax;
             crossingIndices = find(diff(indicesAboveHalfMax) ~= 0);
             FWHM = time_axis(crossingIndices(end)) - time_axis(crossingIndices(1));
-            time_peak=time_axis(maxIndex);
-            
-            % Old/Slow method to get the peak width
-            % [~,xPeaks, widths] = findpeaks(first_signal_raw,time_axis,'SortStr','descend',...
-            %                 'MinPeakDistance',3e-12);
-            % FWHM = widths(1);
-            % time_peak = xPeaks(1);
+            maxWidthPeak = FWHM;
+            toc
+            [~,xPeaks, widths] = findpeaks(first_signal_raw,time_axis,'SortStr','descend',...
+                            'MinPeakDistance',3e-12);
+            maxWidthPeak = widths(1);
+            time_peak = xPeaks(1);
 
-            time_to_zero = time_peak + FWHM*pourc_width/100;
+            time_to_zero = time_peak + maxWidthPeak*pourc_width/100;
             Raman_Fast_Processing.dead_points = round((time_to_zero/max(time_axis))*numel(time_axis));
             window=[zeros(Raman_Fast_Processing.dead_points,1).' tukeywin(Raman_Fast_Processing.N_t - Raman_Fast_Processing.dead_points,tukey_window_param).' ].'; 
             window=window(1:Raman_Fast_Processing.N_t);

@@ -39,7 +39,7 @@ RP.window2_name=XP.window2_name;
 RP.ratio_window=XP.ratio_window;
 RP.tukey_window_param=XP.tukey_window_param;
 RP.pourc_pulse_width = XP.pourc_pulse_width;
-
+tic
 % Put the parameters
 RP.tukey_window_param = 1;
 RP.pourc_pulse_width=100;
@@ -71,7 +71,7 @@ RP = RP.FT(RP.data_stitched.t_stitched, permute(RP.data_stitched.data_R,[3 1 2])
 RP = RP.make_raman_spectrum();
 
 RP = RP.points_to_plot_by_frequency();
-
+toc
 imagesc(squeeze(abs(RP.hyperspectralRamanImageComplex(RP.pixels_plot(1),:,:))));
 
 

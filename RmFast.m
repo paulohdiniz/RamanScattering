@@ -21,6 +21,7 @@ classdef RmFast %Raman_Fast_Processing
         data_raw
         data_processed
         time_axis
+        Total_delay
 
         % Image Parameters
         N_x
@@ -59,37 +60,47 @@ classdef RmFast %Raman_Fast_Processing
         tukey_window_param
 
         % Impulsion Pulse
-        pourc_pulse_width;
+        percent_FWHM;
         dead_points;
        
     end
 
     methods
 
-        function RmFast=RmFast(data_raw,N_x,N_y,N_t)
+        function RmFast=RmFast(data_raw,N_x,N_y,N_t, Clock_Freq)
             RmFast.data_raw=data_raw;
             RmFast.N_x=N_x;
             RmFast.N_y=N_y;
             RmFast.N_t=N_t;
-            RmFast=RmFast.FT();
+            RmFast.delays = [0 3 6 9 12];
+            RmFast.ratio_window = 1;
+            RmFast.Clock_Freq = Clock_Freq;
+            RmFast=RmFast.window_overlap(1,100);
+            RmFast=RmFast.Tnorm_and_center_data();
+            RmFast=RmFast.stitch_time_axis_T_with_interp();
+            RmFast = RmFast.pick_fourier_window('blackman');
+            RmFast = RmFast.FT(RmFast.data_stitched.t_stitched, permute(RmFast.data_stitched.data_R,[3 1 2]).*repmat(RmFast.window2.',[1 50 50])); % wavenumbers are in cm^-1, Raman spectrum is arbitrary units
+            RmFast = RmFast.make_raman_spectrum();
+            %RmFast = RmFast.points_to_plot_by_frequency();
         end
 
-        function  RmFast=update_data(RmFast,data_raw,N_x,N_y,N_t)
-            RmFast.data_raw=data_raw;
-            RmFast.N_x=N_x;
-            RmFast.N_y=N_y;
-            RmFast.N_t=N_t;
-        end
+        % function  RmFast=update_data(RmFast,data_raw,N_x,N_y,N_t)
+        %     RmFast.data_raw=data_raw;
+        %     RmFast.N_x=N_x;
+        %     RmFast.N_y=N_y;
+        %     RmFast.N_t=N_t;
+        %     RmFast=RmFast(RmFast.data_raw,)
+        % end
 
         function RmFast=create_time_axis(RmFast, Clock_Freq)
             RmFast.Clock_Freq = Clock_Freq;
-            Total_delay=1/RmFast.Clock_Freq*RmFast.N_t*RmFast.DazzlerTimeConversion;
-            RmFast.time_axis=0:Total_delay/(RmFast.N_t-1):Total_delay;
+            RmFast.Total_delay=1/RmFast.Clock_Freq*RmFast.N_t*RmFast.DazzlerTimeConversion;
+            RmFast.time_axis=0:RmFast.Total_delay/(RmFast.N_t-1):RmFast.Total_delay;
         end
 
-        function RmFast=window_overlap(RmFast,tukey_window_param, pourc_width)
+        function RmFast=window_overlap(RmFast,tukey_window_param, percent_FWHM)
 
-            RmFast.create_time_axis();
+            RmFast=RmFast.create_time_axis(RmFast.Clock_Freq);
 
             first_signal_raw = sum(sum(RmFast.data_raw(1).data_R,2),3);
             
@@ -109,12 +120,15 @@ classdef RmFast %Raman_Fast_Processing
             % FWHM = widths(1);
             % time_peak = xPeaks(1);
 
-            time_to_zero = time_peak + FWHM*pourc_width/100;
+            time_to_zero = time_peak + FWHM*percent_FWHM/100;
             RmFast.dead_points = round((time_to_zero/max(RmFast.time_axis))*numel(RmFast.time_axis));
-            window=[zeros(RmFast.dead_points,1).' tukeywin(RmFast.N_t - RmFast.dead_points,tukey_window_param).' ].'; 
+
+            window=[zeros(RmFast.dead_points,1).' hann(RmFast.N_t - RmFast.dead_points).' ].'; 
+            %window=[zeros(RmFast.dead_points,1).' tukeywin(RmFast.N_t - RmFast.dead_points,tukey_window_param).' ].'; 
+
             window=window(1:RmFast.N_t);
 
-            RmFast.pourc_pulse_width = pourc_width;
+            RmFast.percent_FWHM = percent_FWHM;
             
             % THEN AND STITICHING
             for tt=1:size(RmFast.data_raw,2)
@@ -138,7 +152,7 @@ classdef RmFast %Raman_Fast_Processing
         end
 
         function RmFast=stitch_time_axis_T_with_interp(RmFast) % TO DO
-            RmFast.create_time_axis();
+            RmFast=RmFast.create_time_axis(RmFast.Clock_Freq);
 
             % We find the intersection between the falling first signal and
             % the rising second window.
@@ -165,20 +179,26 @@ classdef RmFast %Raman_Fast_Processing
 
             t_stitch=[cell2mat({temp_data4D.t})];
             data_R_stitch=permute(cell2mat(cellfun(@(x) permute(x,[2 1 3]),{temp_data4D.data_R},'UniformOutput',false)),[1 3 2]);
-            
+
             % Interpolate
             t_ini=repmat(RmFast.time_axis,1,size(RmFast.delays,2));
             t_ini=t_ini+repelem(RmFast.delays,264)*1e-12;
-            t_out=0:Total_delay/(RmFast.N_t-1):max(t_ini);
-            
+            t_out=0:RmFast.Total_delay/(RmFast.N_t-1):max(t_ini);
+
+            % ~0.025s interp1 nearest
+            temp2= interp1(t_stitch,permute(data_R_stitch, [3 1 2]),t_out,'nearest','extrap');
+            RmFast.data_stitched.data_R = permute(temp2,[3 2 1]);
+            RmFast.data_stitched.t_stitched=t_out;
+
+            % ~0.032s interp1 linear
+            % temp2= interp1(t_stitch,permute(data_R_stitch, [3 1 2]),t_out,'linear','extrap');
+            % RmFast.data_stitched.data_R = permute(temp2,[3 2 1]);
+            % RmFast.data_stitched.t_stitched=t_out;
+
+            % ~0.113s makima
             % temp= makima(t_stitch,data_R_stitch,t_out);
             % RmFast.data_stitched.data_R = temp;
             % RmFast.data_stitched.t_stitched=t_out;
-
-            %!!!!!
-            temp2= interp1(t_stitch,permute(data_R_stitch, [3 1 2]),t_out,'linear','extrap');
-            RmFast.data_stitched.data_R = permute(temp2,[3 2 1]);
-            RmFast.data_stitched.t_stitched=t_out;
 
         end
 
@@ -190,31 +210,31 @@ classdef RmFast %Raman_Fast_Processing
                 %Modified Bartlett-Hann window
                 case 'barthannwin'
                     RmFast.window2 = [barthannwin(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched))).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))];
-                
+
                 %Bartlett window
                 case 'bartlett'
                     RmFast.window2 = [bartlett(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched))).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))];
-                
+
                 %Blackman window
                 case 'blackman'
                     RmFast.window2 = [blackman(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched))).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))];
-                                    
+
                 %Minimum four-term Blackman-Harris window
                 case 'blackmanharris'
                     RmFast.window2 = [blackmanharris(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched))).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))];
-                
+
                 %Bohman window
                 case 'bohmanwin'
                     RmFast.window2 = [bohmanwin(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched))).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))];
-                
+
                 %Chebyshev window
                 case 'chebwin'
                     RmFast.window2 = [chebwin(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched))).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))];
-                
+
                 %Flat top weighted window
                 case 'flattopwin'
                     RmFast.window2 = [flattopwin(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched))).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))];
-                
+
                 %Gaussian window
                 case 'gausswin'
                     RmFast.window2 = [gausswin(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched))).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))];
@@ -223,34 +243,33 @@ classdef RmFast %Raman_Fast_Processing
                 case 'hamming'
                     RmFast.window2 = [hamming(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched))).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))];
 
-                %Hann (Hanning) window
+                %Hann (Hanning) window FASTER WINDOW !!!!
                 case 'hann'
                     RmFast.window2 = [hann(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched))).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))];
 
                 %Kaiser window, we can change beta 
                 case 'kaiser'
                     RmFast.window2 = [kaiser(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched))).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))];
-                
+
                 %Nuttall-defined minimum 4-term Blackman-Harris window
                 case 'nuttallwin'
                     RmFast.window2 = [nuttallwin(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched))).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))];
-                
+
                 %Parzen (de la Vallée Poussin) window
                 case 'parzenwin'
                     RmFast.window2 = [parzenwin(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched))).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))];
-                
+
                 %Rectangular window
                 case 'rectwin'
                     RmFast.window2 = [rectwin(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched))).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))];
-                
+
                 %Taylor window
                 case 'taylorwin'
                     RmFast.window2 = [taylorwin(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched))).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))];
-               
-                    %Tukey (tapered cosine) window
+
+                %Tukey (tapered cosine) window
                 case 'tukeywin'
-                    RmFast.window2 = [tukeywin(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched)),RmFast.tukey_window_param).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))];
-                   
+                    RmFast.window2 = [tukeywin(round(RmFast.ratio_window*length(RmFast.data_stitched.t_stitched)),RmFast.tukey_window_param).' zeros(1,round((1-RmFast.ratio_window)*length(RmFast.data_stitched.t_stitched)))]; 
             end
             RmFast.window2=RmFast.window2(1:length(RmFast.data_stitched.t_stitched));
         end
@@ -368,35 +387,6 @@ classdef RmFast %Raman_Fast_Processing
             RmFast.ramanSpectrumWithMask = abs(sum(sum(hyperspectralRamanImageComplexFiltered,2),3));
             RmFast.ramanSpectrumWithMask = RmFast.ramanSpectrumWithMask(1:ceil(length(hyperspectralRamanImageComplexFiltered)/2));
            
-        end
-
-        % Deep copy method for RP class        
-        function newRP = copy(obj)           
-            newRP = RmFast();
-            newRP.Clock_Freq=obj.Clock_Freq;
-            newRP.delays=obj.delays;
-            newRP.data_raw=obj.data_raw;
-            newRP.data_processed=obj.data_processed;
-            newRP.N_x=obj.N_x;
-            newRP.N_y=obj.N_y;
-            newRP.N_t=obj.N_t;
-            newRP.data_stitched=obj.data_stitched;
-            newRP.t_interp=obj.t_interp;
-            newRP.data_interp=obj.data_interp;
-            newRP.hyperspectralRamanImageComplex=obj.hyperspectralRamanImageComplex;
-            newRP.wn=obj.wn;
-            newRP.ramanSpectrum=obj.ramanSpectrum;
-            newRP.ramanSpectrumWithMask=obj.ramanSpectrumWithMask;
-            newRP.Fs=obj.Fs;
-            newRP.peakAmpli=obj.peakAmpli;
-            newRP.peakAmpli_wn=obj.peakAmpli_wn;
-            newRP.wns_plot=obj.wns_plot;
-            newRP.pixels_plot=obj.pixels_plot;
-            newRP.window2=obj.window2;
-            newRP.window2_name=obj.window2_name;
-            newRP.ratio_window=obj.ratio_window;
-            newRP.tukey_window_param=obj.tukey_window_param;
-            newRP.pourc_pulse_width = obj.pourc_pulse_width;
         end
         
     end

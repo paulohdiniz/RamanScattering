@@ -1,6 +1,6 @@
 close all
 clear variables 
-cd('C:\Users\phdin\Desktop\Data_Paulo\210306\') % '210306' (xp 29, 30), 2ele
+cd('C:\Users\phdin\Desktop\Data_Paulo\210507\') % '210306' (xp 29, 30), 2ele
                                                % '210507' (xp 41, 15, 16, 17) 2ele
                                                % '210617' (xp 4, 19), 1 ele
 %addpath('/Users/paulohd/Desktop/210619(1samp)')  %210619 xp 10 pour analyser
@@ -9,69 +9,45 @@ addpath('C:\Users\phdin\Desktop\PauloDiniz')
 %% Script that manages the Raman experiment
 
 % We generate the class
-RP=Raman_Fast_Processing();
 XP = Raman_Processing();
 
 % Choose the experiment, and load all the data from the correct folders
-XP=XP.choose_folders_load_data(29); 
+XP=XP.choose_folders_load_data(15); 
 
-RP.Clock_Freq=XP.Clock_Freq;
-RP.delays=XP.delays;
-RP.data_raw=XP.data_raw;
-RP.data_processed=XP.data_processed;
-RP.N_x=XP.N_x;
-RP.N_y=XP.N_y;
-RP.N_t=XP.N_t;
-RP.data_stitched=XP.data_stitched;
-RP.t_interp=XP.t_interp;
-RP.data_interp=XP.data_interp;
-RP.hyperspectralRamanImageComplex=XP.hyperspectralRamanImageComplex;
-RP.wn=XP.wn;
-RP.ramanSpectrum=XP.ramanSpectrum;
-RP.ramanSpectrumWithMask=XP.ramanSpectrumWithMask;
-RP.Fs=XP.Fs;
-RP.peakAmpli=XP.peakAmpli;
-RP.peakAmpli_wn=XP.peakAmpli_wn;
-RP.wns_plot=XP.wns_plot;
-RP.pixels_plot=XP.pixels_plot;
-RP.window2=XP.window2;
-RP.window2_name=XP.window2_name;
-RP.ratio_window=XP.ratio_window;
-RP.tukey_window_param=XP.tukey_window_param;
-RP.pourc_pulse_width = XP.pourc_pulse_width;
-tic
-% Put the parameters
-RP.tukey_window_param = 1;
-RP.pourc_pulse_width=100;
+RP=RmFast(XP.data_raw, XP.N_x, XP.N_y,XP.N_t, XP.Clock_Freq);
 
-% Second window
-RP.window2_name = 'blackman'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
-                        % chebwin, flattopwin, gausswin, hamming, hann,
-                        % kaiser, nuttallwin, parzenwin, rectwin,
-                        % taylorwin, tukeywin,tukeywinINV, triang, ones
-
-%Ratio of second window
-RP.ratio_window = 1;
-
-% Removes the large curve before the sinusoidal
-RP=RP.window_overlap(RP.tukey_window_param,RP.pourc_pulse_width);
-
-% Normalizes and centers the data
-RP=RP.Tnorm_and_center_data();
-
-% Do the interpolation
-RP=RP.stitch_time_axis_T_with_interp();
-
-% Applies the second window to the signal
-RP = RP.pick_fourier_window(RP.window2_name); 
-
-% FT
-RP = RP.FT(RP.data_stitched.t_stitched, permute(RP.data_stitched.data_R,[3 1 2]).*repmat(RP.window2.',[1 50 50])); % wavenumbers are in cm^-1, Raman spectrum is arbitrary units
-
-RP = RP.make_raman_spectrum();
+% % Put the parameters
+% RP.tukey_window_param = 1;
+% RP.pourc_pulse_width=100;
+% 
+% % Second window
+% RP.window2_name = 'blackman'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
+%                         % chebwin, flattopwin, gausswin, hamming, hann,
+%                         % kaiser, nuttallwin, parzenwin, rectwin,
+%                         % taylorwin, tukeywin,tukeywinINV, triang, ones
+% 
+% %Ratio of second window
+% RP.ratio_window = 1;
+% 
+% % Removes the large curve before the sinusoidal
+% RP=RP.window_overlap(RP.tukey_window_param,RP.pourc_pulse_width);
+% 
+% % Normalizes and centers the data
+% RP=RP.Tnorm_and_center_data();
+% 
+% % Do the interpolation
+% RP=RP.stitch_time_axis_T_with_interp();
+% 
+% % Applies the second window to the signal
+% RP = RP.pick_fourier_window(RP.window2_name); 
+% 
+% % FT
+% RP = RP.FT(RP.data_stitched.t_stitched, permute(RP.data_stitched.data_R,[3 1 2]).*repmat(RP.window2.',[1 50 50])); % wavenumbers are in cm^-1, Raman spectrum is arbitrary units
+% 
+% RP = RP.make_raman_spectrum();
 
 RP = RP.points_to_plot_by_frequency();
-toc
+
 imagesc(squeeze(abs(RP.hyperspectralRamanImageComplex(RP.pixels_plot(1),:,:))));
 
 

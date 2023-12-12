@@ -1,10 +1,10 @@
 close all
 clear variables 
-cd('C:\Users\phdin\Desktop\Data_Paulo\210306\') % '210306' (xp 29, 30), 2ele
+cd('C:\Users\phdin\Desktop\Data_Paulo\210507') % '210306' (xp 29, 30), 2ele
                                                % '210507' (xp 41, 15, 16, 17) 2ele
                                                % '210617' (xp 4, 19), 1 ele
 %addpath('/Users/paulohd/Desktop/210619(1samp)')  %210619 xp 10 pour analyser
-addpath('C:\Users\phdin\Desktop\PauloDiniz')
+addpath('C:\Users\phdin\Desktop\Data_Paulo\210507')
 
 %% Script that manages the Raman experiment
 
@@ -13,11 +13,11 @@ RP=Raman_Processing();
 RP.DCopt=1;
 
 % Choose the experiment, and load all the data from the correct folders
-RP=RP.choose_folders_load_data(29); 
+RP=RP.choose_folders_load_data(41); 
 
 % Put the parameters
 RP.tukey_window_param = 1;
-RP.pourc_pulse_width=100;
+RP.percent_FWHM=100;
 
 % Interpolation method
 RP.interp_method = 'makima'; %makima, pchirp, spline
@@ -34,8 +34,8 @@ RP.ratio_window = 1;%get_best_ratio_window_by_frequency(RP); % after tukey and d
 %RP.ratio_window = get_best_ratio_window_by_ssim(RP); % after tukey and deadtime
 
 % Removes the large curve before the sinusoidal
-RP=RP.window_overlap_to_test(RP.tukey_window_param,RP.pourc_pulse_width);
-%RP=RP.window_overlap(RP.tukey_window_param,RP.pourc_pulse_width); %change de 
+RP=RP.window_overlap_to_test(RP.tukey_window_param,RP.percent_FWHM);
+%RP=RP.window_overlap(RP.tukey_window_param,RP.percent_FWHM); %change de 
 
 % Normalizes and centers the data
 RP=RP.Tnorm_and_center_data(1,0);
@@ -64,7 +64,7 @@ RP.signalIFFT = get_signal_by_time_from_ifft(RP);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% GIFS
-%get_gif_by_pourc_pulse_width(RP);
+get_gif_by_FWHM(RP);
 %get_gif_by_interp_method(RP);
 %get_gif_by_ratiotukey(RP);
 %get_gif_by_ratiowindow(RP);
@@ -73,7 +73,7 @@ RP.signalIFFT = get_signal_by_time_from_ifft(RP);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% PLOT 
-plot_graphs(RP);
+%plot_graphs(RP);
 %plot_graphs_with_transmission(RP);
 %plot_graphs_with_roi(RP); 
 %plot_graphs_with_ifft(RP);

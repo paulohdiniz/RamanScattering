@@ -85,7 +85,7 @@ classdef Raman_Processing
         tukey_window_param
 
         %Impulsion Pulse
-        pourc_pulse_width;
+        percent_FWHM;
         dead_points;
         
         %image processing
@@ -201,9 +201,11 @@ classdef Raman_Processing
     
                 window=window(1:Raman_Processing.N_t);
                 figure(101),clf,
-                plot(signal./max(signal))
-                hold on,plot((signal.*window)./max(signal.*window))
-                hold on, plot(window./max(window))
+                plot(signal./max(signal),'DisplayName','Raw signal norm', 'Color', 'blue')
+                hold on,plot((signal.*window)./max(signal.*window),'DisplayName','Signal windowed norm','Color', '#006400')
+                hold on, plot(window./max(window),"--",'DisplayName','Tukey window norm', 'Color', 'red')
+                hold on, plot(first_signal_raw./max(first_signal_raw),'DisplayName','abs(integral of raw)^2', 'Color', 'magenta')
+                legend
                 prompt = {'Pourcentage of width:','Is the windowing ok ?'};
                 dlgtitle = 'Input';
                 dims = [1 35];
@@ -215,7 +217,7 @@ classdef Raman_Processing
                 pourc_width=str2double(answer{1});
             end
             close(101)
-            Raman_Processing.pourc_pulse_width = pourc_width;
+            Raman_Processing.percent_FWHM = pourc_width;
 
             % THEN AND STITICHING
             for tt=1:size(Raman_Processing.data_raw,2)
@@ -249,7 +251,7 @@ classdef Raman_Processing
             window=[zeros(Raman_Processing.dead_points,1).' tukeywin(Raman_Processing.N_t - Raman_Processing.dead_points,tukey_window_param).' ].'; 
             window=window(1:Raman_Processing.N_t);
 
-            Raman_Processing.pourc_pulse_width = pourc_width;
+            Raman_Processing.percent_FWHM = pourc_width;
             
             % THEN AND STITICHING
             for tt=1:size(Raman_Processing.data_raw,2)
@@ -322,6 +324,18 @@ classdef Raman_Processing
             t_out=0:Total_delay/(Raman_Processing.N_t-1):max(t_ini);
 
             switch interp_method
+                case 'nearest'
+                    % ~0.025s interp1 nearest
+                    temp= interp1(t_stitch,permute(data_R_stitch, [3 1 2]),t_out,'nearest','extrap');
+                    Raman_Processing.data_stitched.data_R = permute(temp,[3 2 1]);
+                    Raman_Processing.data_stitched.t_stitched=t_out;
+
+                case 'linear'
+                    % ~0.032s interp1 linear
+                    temp= interp1(t_stitch,permute(data_R_stitch, [3 1 2]),t_out,'linear','extrap');
+                    Raman_Processing.data_stitched.data_R = permute(temp,[3 2 1]);
+                    Raman_Processing.data_stitched.t_stitched=t_out;
+
                 case 'makima'
                     temp= makima(t_stitch,data_R_stitch,t_out);
                     Raman_Processing.data_stitched.data_R = temp;
@@ -674,7 +688,7 @@ classdef Raman_Processing
             newRP.window2_name=obj.window2_name;
             newRP.ratio_window=obj.ratio_window;
             newRP.tukey_window_param=obj.tukey_window_param;
-            newRP.pourc_pulse_width = obj.pourc_pulse_width;
+            newRP.percent_FWHM = obj.percent_FWHM;
             newRP.IP = obj.IP;
             newRP.name_pdf = obj.name_pdf;
             newRP.signalIFFT = obj.signalIFFT;

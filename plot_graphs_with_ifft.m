@@ -1,5 +1,11 @@
 function plot_graphs_with_ifft(SP)
-    name_of_figure = append('Exp : ', string(SP.xp_number));
+    
+    if isprop(SP,'xp_number')
+        name_of_figure = append('Exp : ', string(SP.xp_number));
+    else
+        name_of_figure = "Plot Graphs with ifft";
+    end
+
     h1 = figure('Position', [50 100 1300 800],'Name', name_of_figure);
     
     subplot(6,4,[1,2,5,6,9,10]);
@@ -32,7 +38,10 @@ function plot_graphs_with_ifft(SP)
     set(gca,'ytick',[]);
 
     time_half_axis = SP.data_stitched.t_stitched(1:floor(length(SP.data_stitched.t_stitched)/5)).*1E12;
-
+    
+    if isempty(SP.signalIFFT)
+        SP = SP.make_signal_ifft();
+    end
     subplot(6,4, [3,4,7,8])
     plot(time_half_axis, squeeze(mean(real(SP.signalIFFT(1).signal(1:length(time_half_axis),:,:)),[2 3])))
 

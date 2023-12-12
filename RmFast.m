@@ -42,6 +42,7 @@ classdef RmFast %Raman_Fast_Processing
 
         % Parameters of FFT and spectrogram
         Fs
+        signalIFFT
 
         % Properties of Raman Spectrum
         peakAmpli
@@ -67,19 +68,19 @@ classdef RmFast %Raman_Fast_Processing
 
     methods
 
-        function RmFast=RmFast(data_raw,N_x,N_y,N_t, Clock_Freq)
-            RmFast.data_raw=data_raw;
+        function RmFast=RmFast(data_raw,N_x,N_y,N_t,Clock_Freq)
             RmFast.N_x=N_x;
             RmFast.N_y=N_y;
             RmFast.N_t=N_t;
-            RmFast.delays = [0 3 6 9 12];
-            RmFast.ratio_window = 1;
             RmFast.Clock_Freq = Clock_Freq;
+            RmFast.delays = [0];
+            RmFast = RmFast.get_data_raw(data_raw(1).data_R,data_raw(1).data_T);
+            RmFast.ratio_window = 1;
             RmFast=RmFast.window_overlap(1,100);
             RmFast=RmFast.Tnorm_and_center_data();
             RmFast=RmFast.stitch_time_axis_T_with_interp();
-            RmFast = RmFast.pick_fourier_window('blackman');
-            RmFast = RmFast.FT(RmFast.data_stitched.t_stitched, permute(RmFast.data_stitched.data_R,[3 1 2]).*repmat(RmFast.window2.',[1 50 50])); % wavenumbers are in cm^-1, Raman spectrum is arbitrary units
+            RmFast = RmFast.pick_fourier_window('hann');
+            RmFast = RmFast.FT(RmFast.data_stitched.t_stitched, permute(RmFast.data_stitched.data_R,[3 1 2]).*repmat(RmFast.window2.',[1 RmFast.N_x/2 RmFast.N_y])); % wavenumbers are in cm^-1, Raman spectrum is arbitrary units
             RmFast = RmFast.make_raman_spectrum();
             %RmFast = RmFast.points_to_plot_by_frequency();
         end
@@ -98,10 +99,15 @@ classdef RmFast %Raman_Fast_Processing
             RmFast.time_axis=0:RmFast.Total_delay/(RmFast.N_t-1):RmFast.Total_delay;
         end
 
+        function RmFast=get_data_raw(RmFast, data_raw_R,data_raw_T)
+            RmFast.data_raw.data_R=double(reshape(data_raw_R,[RmFast.N_t,RmFast.N_x/2,RmFast.N_y]));
+            RmFast.data_raw.data_T=double(reshape(data_raw_T,[RmFast.N_t,RmFast.N_x/2,RmFast.N_y]));
+        end
+
         function RmFast=window_overlap(RmFast,tukey_window_param, percent_FWHM)
 
             RmFast=RmFast.create_time_axis(RmFast.Clock_Freq);
-
+            RmFast.data_raw(1) %  TO TEST
             first_signal_raw = sum(sum(RmFast.data_raw(1).data_R,2),3);
             
             first_signal_raw = abs(cumtrapz(first_signal_raw)).^2;
@@ -182,7 +188,7 @@ classdef RmFast %Raman_Fast_Processing
 
             % Interpolate
             t_ini=repmat(RmFast.time_axis,1,size(RmFast.delays,2));
-            t_ini=t_ini+repelem(RmFast.delays,264)*1e-12;
+            t_ini=t_ini+repelem(RmFast.delays,RmFast.N_t)*1e-12;
             t_out=0:RmFast.Total_delay/(RmFast.N_t-1):max(t_ini);
 
             % ~0.025s interp1 nearest
@@ -387,6 +393,10 @@ classdef RmFast %Raman_Fast_Processing
             RmFast.ramanSpectrumWithMask = abs(sum(sum(hyperspectralRamanImageComplexFiltered,2),3));
             RmFast.ramanSpectrumWithMask = RmFast.ramanSpectrumWithMask(1:ceil(length(hyperspectralRamanImageComplexFiltered)/2));
            
+        end
+
+        function RmFast=make_signal_ifft(RmFast)
+            RmFast.signalIFFT = get_signal_by_time_from_ifft(RmFast);
         end
         
     end

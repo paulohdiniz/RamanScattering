@@ -12,20 +12,21 @@ addpath('C:\Users\phdin\Desktop\PauloDiniz')
 XP = Raman_Processing();
 
 % Choose the experiment, and load all the data from the correct folders
-XP=XP.choose_folders_load_data(15); 
+XP=XP.choose_folders_load_data(15);
 
-RP=RmFast(XP.data_raw, XP.N_x, XP.N_y,XP.N_t, XP.Clock_Freq);
+RP=RmFast(XP.data_raw, XP.N_x, XP.N_y, XP.N_t, XP.Clock_Freq);
 
 % % Put the parameters
 % RP.tukey_window_param = 1;
 % RP.pourc_pulse_width=100;
 % 
 % % Second window
-% RP.window2_name = 'blackman'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
+% RP.window2_name = 'blackman'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin,
 %                         % chebwin, flattopwin, gausswin, hamming, hann,
-%                         % kaiser, nuttallwin, parzenwin, rectwin,
+%                         % kaiser, nuttallwin, parzenwin, rectwin, 
 %                         % taylorwin, tukeywin,tukeywinINV, triang, ones
-% 
+%
+%
 % %Ratio of second window
 % RP.ratio_window = 1;
 % 
@@ -39,7 +40,7 @@ RP=RmFast(XP.data_raw, XP.N_x, XP.N_y,XP.N_t, XP.Clock_Freq);
 % RP=RP.stitch_time_axis_T_with_interp();
 % 
 % % Applies the second window to the signal
-% RP = RP.pick_fourier_window(RP.window2_name); 
+% RP = RP.pick_fourier_window(RP.window2_name);
 % 
 % % FT
 % RP = RP.FT(RP.data_stitched.t_stitched, permute(RP.data_stitched.data_R,[3 1 2]).*repmat(RP.window2.',[1 50 50])); % wavenumbers are in cm^-1, Raman spectrum is arbitrary units
@@ -61,11 +62,11 @@ imagesc(squeeze(abs(RP.hyperspectralRamanImageComplex(RP.pixels_plot(1),:,:))));
 %get_infos_by_windows(RP);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% PLOT 
+%% PLOT
 %plot_graphs(RP);
 %plot_graphs_with_transmission(RP);
-%plot_graphs_with_roi(RP); 
-%plot_graphs_with_ifft(RP);
+%plot_graphs_with_roi(RP);
+plot_graphs_with_ifft(RP);
 %plot_best_ssim_by_ratio_window(RP);
 %plot_spectrogram(RP);
 %plot_best_hyperspectral_images(RP);
@@ -74,7 +75,7 @@ imagesc(squeeze(abs(RP.hyperspectralRamanImageComplex(RP.pixels_plot(1),:,:))));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% SAVE
-%save_graphs_as_PDF(RP); 
+%save_graphs_as_PDF(RP);
 %save_raman_spectrum_as_PDF(RP);
 %save_txt_by_windows(RP);
 %save_txt_best_filter_by_ssim(RP);

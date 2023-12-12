@@ -1,6 +1,5 @@
 function signalIFFT = get_signal_by_time_from_ifft(SP)
     
-    t_values_for_stop = get_ideal_times_by_spectrogram(SP);
     if (numel(SP.peakAmpli_wn) ~= 0 )
         for i=1:min(numel(SP.peakAmpli_wn),3) 
             filter_window(i).wn =[(SP.peakAmpli_wn(i) - 1.5*(SP.peakWidth(i))) (SP.peakAmpli_wn(i) + 1.5*(SP.peakWidth(i)))];
@@ -24,9 +23,6 @@ function signalIFFT = get_signal_by_time_from_ifft(SP)
         t=(0:(NFFT-1))*(2/SP.Fs);
 
         signalIFFT(i).signal = ifft(temp.*SP.hyperspectralRamanImageComplex(size(complete_filter(i).window(:),1),:,:), NFFT, 1);
-        % figure,plot(t(1:1024),real(squeeze(mean(signalIFFT(i).signal(1:1024,:,:),[2 3]))))
-        % figure,plot(t,real(squeeze(mean(signalIFFT(i).signal,[2 3]))))
-
 
     end
     if (numel(signalIFFT) == 0)

@@ -1,6 +1,10 @@
 function plot_best_hyperspectral_images(SP)
 
-name_of_figure = append('Exp : ', string(SP.xp_number));
+if isprop(SP,'xp_number')
+    name_of_figure = append('Exp : ', string(SP.xp_number));
+else
+    name_of_figure = "Plot best hyp images";
+end
 
 [t_values_for_stop, t_subsections, y_subsections, t, ampli, freq_of_peaks] = get_ideal_times_by_spectrogram(SP);
 

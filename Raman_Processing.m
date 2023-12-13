@@ -326,13 +326,13 @@ classdef Raman_Processing
             switch interp_method
                 case 'nearest'
                     % ~0.025s interp1 nearest
-                    temp= interp1(t_stitch,permute(data_R_stitch, [3 1 2]),t_out,'nearest','extrap');
+                    temp= interp1(t_stitch,permute(data_R_stitch, [3 2 1]),t_out,'nearest','extrap');
                     Raman_Processing.data_stitched.data_R = permute(temp,[3 2 1]);
                     Raman_Processing.data_stitched.t_stitched=t_out;
 
                 case 'linear'
                     % ~0.032s interp1 linear
-                    temp= interp1(t_stitch,permute(data_R_stitch, [3 1 2]),t_out,'linear','extrap');
+                    temp= interp1(t_stitch,permute(data_R_stitch, [3 2 1]),t_out,'linear','extrap');
                     Raman_Processing.data_stitched.data_R = permute(temp,[3 2 1]);
                     Raman_Processing.data_stitched.t_stitched=t_out;
 
@@ -512,49 +512,6 @@ classdef Raman_Processing
 
         end
 
-        function Raman_Processing=points_to_plot_by_ssim(Raman_Processing)
-
-            temp=Raman_Processing.IP.ssim_wn;
-            
-            wn_temp=Raman_Processing.wn(Raman_Processing.wn<Raman_Processing.Max_wn_to_search_peaks);
-            temp=(temp(Raman_Processing.wn<Raman_Processing.Max_wn_to_search_peaks));
-            
-            wn_temp2=wn_temp(wn_temp>Raman_Processing.Min_wn_to_search_peaks);
-            temp=(temp(wn_temp>Raman_Processing.Min_wn_to_search_peaks));
-
-
-            [yPeaks,xPeaks] = findpeaks(temp,wn_temp2,'SortStr','descend',...
-                'MinPeakHeight',Raman_Processing.MinPeakHeight,...
-                'MinPeakDistance',Raman_Processing.MinPeakDistance,...
-                'MinPeakProminence',Raman_Processing.MinPeakProminence);
-            
-            if numel(xPeaks) ~= 0
-                Raman_Processing.wns_plot = zeros(1, numel(xPeaks));
-                for i = 1:numel(xPeaks)
-                    Raman_Processing.wns_plot(i) = xPeaks(i);
-                end
-            else
-                Raman_Processing.IP.peaks_ssim_wn = [0 0 0];
-            end
-
-            %Here it takes the indices for the plot
-            for i=1:size(Raman_Processing.wns_plot,2)
-                Raman_Processing.pixels_plot(i) = find(abs(Raman_Processing.wn-Raman_Processing.wns_plot(i))==min(abs(Raman_Processing.wn-Raman_Processing.wns_plot(i))));
-            end
-
-            %Case where we have < 3 peaks, so we will plot the same image
-            if(size(Raman_Processing.wns_plot) ==2)
-                Raman_Processing.pixels_plot(3) = Raman_Processing.pixels_plot(2);
-                Raman_Processing.wns_plot(3) = Raman_Processing.wns_plot(2);
-            end
-            if(size(Raman_Processing.wns_plot) ==1)
-                Raman_Processing.pixels_plot(2) = Raman_Processing.pixels_plot(1);
-                Raman_Processing.pixels_plot(3) = Raman_Processing.pixels_plot(1);
-                Raman_Processing.wns_plot(2) = Raman_Processing.pixels_plot(1);
-                Raman_Processing.wns_plot(3) = Raman_Processing.pixels_plot(1);
-            end
-        end
-
         function Raman_Processing=points_to_plot_by_frequency(Raman_Processing)
 
             temp=Raman_Processing.ramanSpectrum;
@@ -633,6 +590,49 @@ classdef Raman_Processing
                 Raman_Processing.wns_plot(2) = Raman_Processing.pixels_plot(1);
                 Raman_Processing.wns_plot(3) = Raman_Processing.pixels_plot(1);
             end
+        end
+
+        function Raman_Processing=get_signal_by_time_from_ifft(Raman_Processing)
+
+            if (numel(Raman_Processing.peakAmpli_wn) ~= 0 )
+                for i=1:min(numel(Raman_Processing.peakAmpli_wn),3) 
+                    filter_window(i).wn =[(Raman_Processing.peakAmpli_wn(i) - 1.5*(Raman_Processing.peakWidth(i))) (Raman_Processing.peakAmpli_wn(i) + 1.5*(Raman_Processing.peakWidth(i)))];
+                    complete_filter(i).window = zeros(1, 2*length(Raman_Processing.ramanSpectrum));
+                end
+            end
+            
+            for i=1:size(filter_window,2)
+                inf = find(abs(Raman_Processing.wn-filter_window(i).wn(1))==min(abs(Raman_Processing.wn-filter_window(i).wn(1))));
+                sup = find(abs(Raman_Processing.wn-filter_window(i).wn(2))==min(abs(Raman_Processing.wn-filter_window(i).wn(2))));
+                
+                filter_window(i).pixels = [inf sup];
+                filter_window(i).window = blackman(sup - inf+1);
+        
+                complete_filter(i).window(inf:sup) = ones(1, sup - inf + 1);
+                complete_filter(i).window(inf:sup) = complete_filter(i).window(inf:sup)'.*blackman(sup - inf + 1);
+        
+                temp=ones(length(complete_filter(i).window),50,50);
+                temp=bsxfun(@times,temp,complete_filter(i).window.');
+                NFFT = 2^(nextpow2(size(temp,1))); 
+                t=(0:(NFFT-1))*(2/Raman_Processing.Fs);
+        
+                Raman_Processing.signalIFFT(i).signal = ifft(temp.*Raman_Processing.hyperspectralRamanImageComplex(size(complete_filter(i).window(:),1),:,:), NFFT, 1);
+        
+            end
+            if (numel(Raman_Processing.signalIFFT) == 0)
+                for i=1:3
+                    Raman_Processing.signalIFFT(i).signal = 0;
+                end
+            end
+            if (numel(Raman_Processing.signalIFFT) == 1)
+                for i=2:3
+                    Raman_Processing.signalIFFT(i).signal = 0;
+                end
+            end
+            if (numel(Raman_Processing.signalIFFT) == 2)
+                Raman_Processing.signalIFFT(3).signal = 0;
+            end
+
         end
 
         function Raman_Processing=make_raman_spectrum_with_mask(Raman_Processing, mask)

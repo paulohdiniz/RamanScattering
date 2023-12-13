@@ -82,8 +82,7 @@ function plot_graphs_with_roi(SP)
         append('Window: ', string(SP.window2_name)) ...
         append('Ratio window: ', string(SP.ratio_window)), ...
         append('Tukey ratio: ', string(SP.tukey_window_param)), ...
-        append('Pourc pulse: ', string(SP.pourc_pulse_width)), ...
-        },...
+        append('Perc FWHM: ', string(SP.percent_FWHM))}, ...
         'Rotation',0, ...
         'interpreter','none', ...
         'fontweight','bold', ...
@@ -94,17 +93,16 @@ function plot_graphs_with_roi(SP)
     han.Position(2) = han.Position(2) - abs(han.Position(2) * 1); %vertical indent
 
     figure('Name','Select the desired pixel polygon:', 'Position', [1000 500 400 400]);
-    %IXRGB = SP.IP.imagesc2rgb(squeeze(mean((SP.data_processed(1).data_T),[1])));
     imagesc(squeeze(mean((SP.data_processed(1).data_T),[1])));
-    %alternante = gcf; 
     colormap('hot')
-    %imagesc(squeeze(abs(SP.hyperspectralRamanImageComplex(SP.pixels_plot(1),:,:))));
+
+    % ROI 1
     mask = roipoly;
     SP = SP.make_raman_spectrum_with_mask(mask);
     tempmask1= SP.ramanSpectrumWithMask;
     plot(axisRamSpec, SP.wn,tempmask1, "-", 'DisplayName','ROI Spectrum','Color', '#006400');
 
-
+    % ROI 2
     mask2 = roipoly;
     SP = SP.make_raman_spectrum_with_mask(mask2);
     tempmask2= SP.ramanSpectrumWithMask;
@@ -124,12 +122,4 @@ function plot_graphs_with_roi(SP)
     text(-0.1,1.1,'b','Units', 'Normalized', 'VerticalAlignment', 'Top','FontSize',14)
     set(gca,'ytick',[]);
     
-    % x = imagesc2rgb(alternante);
-    % mask2 = roipoly(figure_DATAT.CurrentObject);
-    % SP = SP.make_raman_spectrum_with_mask(mask2);
-    % % %figure ('Name', 'Raman Spectrum with mask selected2','Position',[1300 100 600 400]),
-    % plot(axisRamSpec, SP.wn,SP.ramanSpectrumWithMask, 'DisplayName','ROI2 Spectrum');
-    % 
-
-
 end

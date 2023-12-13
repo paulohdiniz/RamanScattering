@@ -3,11 +3,10 @@ function plot_spectrogram(SP)
     %Default Values of Spectrogram
     temp_t=SP.data_stitched.t_stitched;
     temp_data=squeeze(mean(SP.data_stitched.data_R,[1 2]));
-
     freqLim = 150; %in cm^-1
 
-    M = round(numel(temp_t)*0.5); %pas optimise encore
-    L = M - 5 ;    %pas optimise encore, PS: Changer L change seulement la qtd de points de t, s et f ne chageant pas sa taille
+    M = round(numel(temp_t)*0.5); %not optimized yet
+    L = M - 5 ;    %not optimized yet, PS: Changing L only changes the qtd of points of t, s and f not changing its size
     Ndft = max(512,2^nextpow2(M));
     g = blackman(M); 
     [s,f,t, p] = spectrogram(temp_data,g,L,Ndft,SP.Fs);
@@ -59,22 +58,6 @@ function plot_spectrogram(SP)
         xlabel('Wavenumbers [cm^{-1}]','fontsize',8);
         ylabel('delay [ps]','fontsize',8)
         zlabel('????? [u.a]','fontsize',8)
-
-    % 
-    % for M=31:10:800
-    %     for L=M-30:M-10
-    %         if (L < M)
-    %             g = blackman(M); 
-    % 
-    %             Ndft = max(256,2^nextpow2(M));
-    %             texto = [M L Ndft];
-    %             [s,f,t] = spectrogram(temp_data,g,L,Ndft,SP.Fs);
-    %             waterplot(s,f,t,texto),            
-    %             pause(0.001)
-    %             % close gcf,
-    %         end
-    %     end
-    % end
 
     % Waterfall plot of spectrogram
     function waterplot(s,f,t)

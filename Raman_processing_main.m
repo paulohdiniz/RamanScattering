@@ -5,6 +5,7 @@ cd('C:\Users\phdin\Desktop\Data_Paulo\210507') % '210306' (xp 29, 30), 2ele
                                                % '210617' (xp 4, 19), 1 ele
 %addpath('/Users/paulohd/Desktop/210619(1samp)')  %210619 xp 10 pour analyser
 addpath('C:\Users\phdin\Desktop\Data_Paulo\210507')
+xp_number = 41;
 
 %% Script that manages the Raman experiment
 
@@ -13,7 +14,7 @@ RP=Raman_Processing();
 RP.DCopt=1;
 
 % Choose the experiment, and load all the data from the correct folders
-RP=RP.choose_folders_load_data(41); 
+RP=RP.choose_folders_load_data(xp_number); 
 
 % Put the parameters
 RP.tukey_window_param = 1;
@@ -23,7 +24,7 @@ RP.percent_FWHM=100;
 RP.interp_method = 'makima'; %makima, pchirp, spline
 
 % Second window
-RP.window2_name = 'rectwin'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
+RP.window2_name = 'blackman'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
                         % chebwin, flattopwin, gausswin, hamming, hann,
                         % kaiser, nuttallwin, parzenwin, rectwin,
                         % taylorwin, tukeywin,tukeywinINV, triang, ones
@@ -56,32 +57,30 @@ RP = RP.calculated_images_scores_per_wn();
 
 % SSIM or frequency to find peaks
 RP = RP.points_to_plot_by_frequency();
-%RP = RP.points_to_plot_by_ssim();
 
 % Creates signal by time from ifft of peaks
-RP.signalIFFT = get_signal_by_time_from_ifft(RP);
+RP = RP.get_signal_by_time_from_ifft();
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% PLOT 
+% plot_graphs(RP);
+% plot_graphs_with_transmission(RP);
+% plot_graphs_with_roi(RP);
+% plot_similar_pixels_from_rois(RP);
+% plot_graphs_with_ifft(RP);
+% plot_best_ssim_by_ratio_window(RP);
+% plot_spectrogram(RP);
+% plot_best_hyperspectral_images(RP);
+% plot_images_with_filters_by_psnr(RP);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% GIFS
 get_gif_by_FWHM(RP);
-%get_gif_by_interp_method(RP);
-%get_gif_by_ratiotukey(RP);
-%get_gif_by_ratiowindow(RP);
-%get_gif_by_windows(RP);
-%get_infos_by_windows(RP);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% PLOT 
-%plot_graphs(RP);
-%plot_graphs_with_transmission(RP);
-%plot_graphs_with_roi(RP); 
-%plot_graphs_with_ifft(RP);
-%plot_best_ssim_by_ratio_window(RP);
-%plot_spectrogram(RP);
-%plot_best_hyperspectral_images(RP);
-%plot_images_with_filters_by_psnr(RP);
-%plot_similar_pixels_from_rois(RP);
+get_gif_by_interp_method(RP);
+get_gif_by_ratiotukey(RP);
+get_gif_by_ratiowindow(RP);
+get_gif_by_windows(RP);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% SAVE

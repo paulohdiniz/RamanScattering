@@ -1,11 +1,11 @@
 close all
 clear variables 
-cd('C:\Users\phdin\Desktop\Data_Paulo\210507') % '210306' (xp 29, 30), 2ele
+cd('C:\Users\phdin\Desktop\PauloDiniz\Samples') % '210306' (xp 29, 30), 2ele
                                                % '210507' (xp 41, 15, 16, 17) 2ele
                                                % '210617' (xp 4, 19), 1 ele
 %addpath('/Users/paulohd/Desktop/210619(1samp)')  %210619 xp 10 pour analyser
-addpath('C:\Users\phdin\Desktop\Data_Paulo\210507')
-xp_number = 41;
+addpath('C:\Users\phdin\Desktop\PauloDiniz\Samples')
+xp_number = 2;
 
 %% Script that manages the Raman experiment
 
@@ -64,23 +64,23 @@ RP = RP.get_signal_by_time_from_ifft();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% PLOT 
-% plot_graphs(RP);
-% plot_graphs_with_transmission(RP);
-% plot_graphs_with_roi(RP);
-% plot_similar_pixels_from_rois(RP);
-% plot_graphs_with_ifft(RP);
-% plot_best_ssim_by_ratio_window(RP);
-% plot_spectrogram(RP);
-% plot_best_hyperspectral_images(RP);
-% plot_images_with_filters_by_psnr(RP);
+ plot_graphs(RP);
+plot_graphs_with_transmission(RP);
+plot_graphs_with_roi(RP);
+plot_similar_pixels_from_rois(RP);
+plot_graphs_with_ifft(RP);
+plot_best_ssim_by_ratio_window(RP);
+plot_spectrogram(RP);
+plot_best_hyperspectral_images(RP);
+plot_images_with_filters_by_psnr(RP);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% GIFS
-get_gif_by_FWHM(RP);
-get_gif_by_interp_method(RP);
-get_gif_by_ratiotukey(RP);
-get_gif_by_ratiowindow(RP);
-get_gif_by_windows(RP);
+% get_gif_by_FWHM(RP);
+% get_gif_by_interp_method(RP);
+% get_gif_by_ratiotukey(RP);
+% get_gif_by_ratiowindow(RP);
+% get_gif_by_windows(RP);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% SAVE

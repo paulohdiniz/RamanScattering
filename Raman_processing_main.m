@@ -76,11 +76,11 @@ plot_images_with_filters_by_psnr(RP);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% GIFS
-% get_gif_by_FWHM(RP);
-% get_gif_by_interp_method(RP);
-% get_gif_by_ratiotukey(RP);
-% get_gif_by_ratiowindow(RP);
-% get_gif_by_windows(RP);
+get_gif_by_FWHM(RP);
+get_gif_by_interp_method(RP);
+get_gif_by_ratiotukey(RP);
+get_gif_by_ratiowindow(RP);
+get_gif_by_windows(RP);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% SAVE

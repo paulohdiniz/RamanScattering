@@ -7,6 +7,10 @@ These files are organized into five folders, sharing identical names except for 
 
 > &#128193; KL_CBZDH2610_Nik20xLWD_NikCond_1_acc_50ohm_chanAB_50mW_TiSa_50mW_OPO1040_Dazz_minus23kfs2_RF20_APE_310_48dB_100ns_FG_12MHZ_GP_1p5mm_noQWP_HWPTiSa230_OPO328_**0psdelay**
 
+Summary of the lab files can be found in the DetailsOfArchives file. The first column indicates the date, the second the type of experiment, the third the number of experiments carried out, the fourth column indicates whether some data were changed or not and the fifth column a general summary of the quality of the images.
+
+Two samples will be left in this repository. The first is a sample of carbamazepine dihydrate (CBZDH) alone and the other is a sample containing CBZDH and anthracene. In our catalog they are samples 210617-xp4 and 210507-xp41 respectively.
+
 ## Requirements
 
 Ensure you have MATLAB installed, preferably version **R2023a** or a more recent release, with the following toolboxes:

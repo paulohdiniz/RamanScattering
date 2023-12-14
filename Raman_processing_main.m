@@ -11,7 +11,6 @@ xp_number = 41;
 
 % We generate the class
 RP=Raman_Processing();
-RP.DCopt=1;
 
 % Choose the experiment, and load all the data from the correct folders
 RP=RP.choose_folders_load_data(xp_number); 
@@ -21,7 +20,7 @@ RP.tukey_window_param = 1;
 RP.percent_FWHM=100;
 
 % Interpolation method
-RP.interp_method = 'makima'; %makima, pchirp, spline
+RP.interp_method = 'makima'; % nearest, linear, makima, pchip, spline
 
 % Second window
 RP.window2_name = 'blackman'; %barthannwin, bartlett, blackman, blackmanharris, bohmanwin, 
@@ -47,15 +46,16 @@ RP=RP.stitch_time_axis_T_with_interp(RP.interp_method);
 % Applies the second window to the signal
 RP = RP.pick_fourier_window(RP.window2_name); 
 
-% FT
+% Creating hyperspectral datacube with Fourier Transform
 RP = RP.FT(RP.data_stitched.t_stitched, permute(RP.data_stitched.data_R,[3 1 2]).*repmat(RP.window2.',[1 50 50])); % wavenumbers are in cm^-1, Raman spectrum is arbitrary units
 
+% Raman spectrum from hyperspectral datacube
 RP = RP.make_raman_spectrum();
 
 % Calculates image quality indices
 RP = RP.calculated_images_scores_per_wn();
 
-% SSIM or frequency to find peaks
+% Find peaks by Prominence
 RP = RP.points_to_plot_by_frequency();
 
 % Creates signal by time from ifft of peaks

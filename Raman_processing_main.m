@@ -31,7 +31,6 @@ RP.window2_name = 'blackman'; %barthannwin, bartlett, blackman, blackmanharris, 
 %Ratio of second window
 %[RP.window2_name, RP.ratio_window] = get_best_window(RP);
 RP.ratio_window = 1;%get_best_ratio_window_by_frequency(RP); % after tukey and deadtime
-%RP.ratio_window = get_best_ratio_window_by_ssim(RP); % after tukey and deadtime
 
 % Removes the large curve before the sinusoidal
 RP=RP.window_overlap_to_test(RP.tukey_window_param,RP.percent_FWHM);
@@ -64,34 +63,33 @@ RP = RP.get_signal_by_time_from_ifft();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% PLOT 
- plot_graphs(RP);
-plot_graphs_with_transmission(RP);
-plot_graphs_with_roi(RP);
-plot_similar_pixels_from_rois(RP);
-plot_graphs_with_ifft(RP);
-plot_best_ssim_by_ratio_window(RP);
-plot_spectrogram(RP);
-plot_best_hyperspectral_images(RP);
-plot_images_with_filters_by_psnr(RP);
+% plot_graphs(RP);
+% plot_graphs_with_transmission(RP);
+% plot_graphs_with_roi(RP);
+% plot_similar_pixels_from_rois(RP);
+% plot_graphs_with_ifft(RP);
+% plot_best_ssim_by_ratio_window(RP);
+% plot_spectrogram(RP);
+% plot_best_hyperspectral_images(RP);
+% plot_images_with_filters_by_psnr(RP);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% GIFS
-get_gif_by_FWHM(RP);
-get_gif_by_interp_method(RP);
-get_gif_by_ratiotukey(RP);
-get_gif_by_ratiowindow(RP);
-get_gif_by_windows(RP);
+% get_gif_by_FWHM(RP);
+% get_gif_by_interp_method(RP);
+% get_gif_by_ratiotukey(RP);
+% get_gif_by_ratiowindow(RP);
+% get_gif_by_windows(RP);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% SAVE
+%% PDF, TXT
 %save_graphs_as_PDF(RP); 
-%save_raman_spectrum_as_PDF(RP);
 %save_txt_by_windows(RP);
 %save_txt_best_filter_by_ssim(RP);
-%save_txt_best_filter_by_brisque(RP);
+%save_txt_best_filter_by_piqe(RP);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% TO DO:
+%% Model (TODO):
 %get_model(RP);
 
 

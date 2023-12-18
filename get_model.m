@@ -1,7 +1,7 @@
 function get_model(SP)
-    signalIFFT = get_time_spec_from_peaks_by_ifft(SP);
-
-    meanRealSignal = mean(real(signalIFFT(1).signal),[2 3]);
+    SP = SP.get_signal_by_time_from_ifft();
+    
+    meanRealSignal = mean(real(SP.signalIFFT(1).signal),[2 3]);
     meanRealSignal = meanRealSignal(1:length(SP.data_stitched.t_stitched));
     time=SP.data_stitched.t_stitched.';
 

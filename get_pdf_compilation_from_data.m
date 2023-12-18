@@ -20,24 +20,21 @@ for i = 1:numel(folder_content_dates)
     folder_content = folder_content(~startsWith({folder_content.name}, ".")); %excludes all starting with "."
     folder_content = folder_content([folder_content.isdir]); %only folders, not files.
 
-    %salvei em foldercontent todas as pastas dentro
     names_for_dir=cellfun(@(x) x(1:numel(x)),{folder_content(:).name},'UniformOutput',false);  
     % names=cellfun(@(x) x(9:145),{folder_content(:).name},'UniformOutput',false);  
-    %em names salvei o nome dos foldes
 
     % We generate the class
     SP=Sid_Processing();
-    SP.DCopt=1;
     SP.name_pdf = folder_content_dates(i).name;
+
     % Choose the experiment, and load all the data from the correct folders
     for k=1:numel(names_for_dir)/5
-        
         SP=SP.choose_folders_load_data(k); %1,2,3,..
-        SP.ratio_window = get_best_ratio_window_by_frequency(SP);
-        %SP.ratio_window = 0.5;
+        %SP.ratio_window = get_best_ratio_window_by_frequency(SP);
+        SP.ratio_window = 0.5;
         SP.tukey_window_param = 1;
         SP.pourc_pulse_width=100;
-        SP=SP.window_overlap_to_test(SP.tukey_window_param,SP.pourc_pulse_width);
+        SP=SP.window_overlap_to_test(SP.tukey_window_param,SP.percent_FWHM);
         SP=SP.Tnorm_and_center_data(1,0);
         SP=SP.stitch_time_axis_T_with_interp('makima'); %makima, pchirp, linear
         SP = SP.pick_fourier_window('blackman'); %blackman, tukeywin, hamming, hann, flattopwin, '...' for nothing
@@ -46,10 +43,7 @@ for i = 1:numel(folder_content_dates)
         SP = SP.calculated_images_scores_per_wn();
         SP = SP.points_to_plot_by_frequency();
         save_graphs_as_PDF(SP);
-        i
-        k
     end
-
 end
 
 

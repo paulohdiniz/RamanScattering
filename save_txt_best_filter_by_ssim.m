@@ -9,7 +9,7 @@ function save_txt_best_filter_by_ssim(SP)
             fprintf(fileID, 'Folder path : %s \n', string(pwd));
             fprintf(fileID, 'Experiment number: %d \n', SP.xp_number);
             fprintf(fileID, 'Tukey Window parameter: %.4f \n', SP.tukey_window_param);
-            fprintf(fileID, 'Pourc pulse width: %.4f \n', SP.pourc_pulse_width);
+            fprintf(fileID, 'Percent FWHM: %.4f \n', SP.percent_FWHM);
             fprintf(fileID, 'Window type: %s \n', SP.window2_name);
             fprintf(fileID, 'Ratio Window: %.4f \n', SP.ratio_window);
             fprintf(fileID, 'Peaks in order: %d, %d, %d, %d, %d \n', SP.pixels_plot(1), SP.pixels_plot(2), SP.pixels_plot(3));

@@ -163,6 +163,6 @@ This information was used to analyze whether we would find a better described pa
 
 %% Model (TODO)
 
-- **`get_model`**: Function not finished. Attempt to model the ifft of the peaks with the function: fun = @(x, time)x(1)*cos(x(2)*(time-x(5)) + x(3)).*exp(- abs(time-x(5)) / x(4));
+- **`get_model`**: Function not finished. Attempt to model the ifft of the peaks with the function: fun = @(x, time)x(1)* cos(x(2) * (time-x(5)) + x(3)).* exp(- abs(time-x(5)) / x(4));
 
 Some attempts were made, but we first need to correctly construct the time in ifft to continue modeling.

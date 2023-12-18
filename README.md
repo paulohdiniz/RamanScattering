@@ -150,5 +150,19 @@ The last method is `get_signal_by_time_from_ifft` which, based on the peaks foun
 
 PS: The gifs made are at a high speed, to be able to pause and view the image more calmly, the user can open the gif with Windows Media Player and pause to analyze it in more detail.
 
+## PDFs and TXTs
 
+- **`save_graphs_as_PDF`**: Saves the plot_graphs in pdf, if the pdf already exists, it adds a new page.
 
+- **`save_txt_by_windows`**: It analyzes all the main windows described previously and creates a .txt file called infos_windows_exp. In this text file, you will have information about the three main peaks. The first column indicates the SSIM of the image related to the peak, the second the Prominence, the third the peak amplitude, the fourth the peak width, and the fifth column the Prominence divided by the peak width.
+This information was used to analyze whether we would find a better described pattern of relationships between the variables.
+
+- **`save_txt_best_filter_by_ssim`**: Analyzes some filter parameters to improve the image. Create a .txt file called results_best_filter_byssim_exp and save the ideal parameters for optimization according to SSIM in this text file. It performs the analysis for each image 1, 2 and 3 corresponding to each peak of the Raman spectrum.
+
+- **`save_txt_best_filter_by_piqe`**: Analyze the variation of the PIQE parameter. Currently, only the code for the Gaussian window has been written, but users can apply the same process to other filters, comparing different effects on the image quality using the PIQE index.
+
+%% Model (TODO)
+
+- **`get_model`**: Function not finished. Attempt to model the ifft of the peaks with the function: fun = @(x, time)x(1)*cos(x(2)*(time-x(5)) + x(3)).*exp(- abs(time-x(5)) / x(4));
+
+Some attempts were made, but we first need to correctly construct the time in ifft to continue modeling.

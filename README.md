@@ -161,8 +161,6 @@ This information was used to analyze whether we would find a better described pa
 
 - **`save_txt_best_filter_by_piqe`**: Analyze the variation of the PIQE parameter. Currently, only the code for the Gaussian window has been written, but users can apply the same process to other filters, comparing different effects on the image quality using the PIQE index.
 
-%% Model (TODO)
+## Model (TODO)
 
-- **`get_model`**: Function not finished. Attempt to model the ifft of the peaks with the function: fun = @(x, time)x(1)* cos(x(2) * (time-x(5)) + x(3)).* exp(- abs(time-x(5)) / x(4));
-
-Some attempts were made, but we first need to correctly construct the time in ifft to continue modeling.
+- **`get_model`**: Function not finished. Attempt to model the ifft of the peaks with the function: fun = @(x, time)x(1)* cos(x(2) * (time-x(5)) + x(3)).* exp(- abs(time-x(5)) / x(4)); Some attempts were made, but we first need to correctly construct the time in ifft to continue modeling.

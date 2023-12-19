@@ -108,7 +108,7 @@ Outside the folders we have
 
   ![plot graphs image.](/Images/06.svg)
 
-- **`plot_spectrogram`**: A window will open showing the pspectrum, persistence spectrum and power spectrum graphs, the user must change the observation limit frequency..
+- **`plot_spectrogram`**: A window will open showing the [spectrogram](https://fr.mathworks.com/help/signal/ref/spectrogram.html?s_tid=doc_ta), [pspectrum](https://fr.mathworks.com/help/signal/ref/pspectrum.html#d126e147610), [persistence spectrum](https://fr.mathworks.com/help/signal/ref/pspectrum.html#d126e147632) and [power spectrum](https://fr.mathworks.com/help/signal/ref/spectrogram.html?s_tid=doc_ta#bultmx7-spectrumtype) graphs, the user must change the observation limit frequency. These curves are visualized using the [waterfall](https://fr.mathworks.com/help/matlab/ref/waterfall.html?s_tid=doc_ta) function.
 
   ![plot graphs image.](/Images/07.svg)
 

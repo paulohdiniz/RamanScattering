@@ -103,6 +103,7 @@ classdef Raman_Processing
 
         function Raman_Processing=choose_folders_load_data(Raman_Processing,xp_number)
             Raman_Processing.xp_number = xp_number;
+            cd('Samples');
             folder_content=dir(pwd);
             folder_content = folder_content(~startsWith({folder_content.name}, ".")); %excludes all starting with "."
             folder_content = folder_content([folder_content.isdir]); %only folders, not files.

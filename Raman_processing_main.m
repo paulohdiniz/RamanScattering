@@ -1,13 +1,15 @@
 close all
-clear variables 
-cd('C:\Users\phdin\Desktop\PauloDiniz\Samples') % '210306' (xp 29, 30), 2ele
-                                               % '210507' (xp 41, 15, 16, 17) 2ele
-                                               % '210617' (xp 4, 19), 1 ele
-%addpath('/Users/paulohd/Desktop/210619(1samp)')  %210619 xp 10 pour analyser
-addpath('C:\Users\phdin\Desktop\PauloDiniz\Samples')
-xp_number = 2;
+clear variables
+origin_path = fileparts(which('Raman_Processing_Main.m'));
+cd(origin_path)
+addpath(origin_path)
+addpath('Functions')
+addpath('Samples')
 
 %% Script that manages the Raman experiment
+
+% Experiment number
+xp_number = 2;
 
 % We generate the class
 RP=Raman_Processing();
@@ -29,12 +31,13 @@ RP.window2_name = 'blackman'; %barthannwin, bartlett, blackman, blackmanharris, 
                         % taylorwin, tukeywin,tukeywinINV, triang, ones
 
 %Ratio of second window
-%[RP.window2_name, RP.ratio_window] = get_best_window(RP);
-RP.ratio_window = 1;%get_best_ratio_window_by_frequency(RP); % after tukey and deadtime
+%RP.ratio_window = 1; % The user chooses the ratio.
+%RP.ratio_window = get_best_ratio_window_by_frequency(RP); % Search for the best ratio
+[RP.window2_name, RP.ratio_window] = get_best_window(RP); % Search for the best ratio and the best window
 
 % Removes the large curve before the sinusoidal
-RP=RP.window_overlap_to_test(RP.tukey_window_param,RP.percent_FWHM);
-%RP=RP.window_overlap(RP.tukey_window_param,RP.percent_FWHM); %change de 
+%RP=RP.window_overlap(RP.tukey_window_param,RP.percent_FWHM); % With User Validation
+RP=RP.window_overlap_to_test(RP.tukey_window_param,RP.percent_FWHM); % Without User Validation
 
 % Normalizes and centers the data
 RP=RP.Tnorm_and_center_data(1,0);
@@ -59,7 +62,6 @@ RP = RP.points_to_plot_by_frequency();
 
 % Creates signal by time from ifft of peaks
 RP = RP.get_signal_by_time_from_ifft();
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% PLOT 

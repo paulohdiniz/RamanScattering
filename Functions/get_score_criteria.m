@@ -1,3 +1,4 @@
+
 function scoreCriteria = get_score_criteria(SP)
 
        scoreCriteria = [];

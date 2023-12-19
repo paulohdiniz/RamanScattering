@@ -92,15 +92,15 @@ Outside the folders we have
 
   ![plot graphs image.](/Images/02.svg)
 
-- **`plot_graphs_with_roi`**: the same previous image opens, but this time a second image opens alongside with the transmission image, in this image the user can select two regions of interest to analyze the spectrum of the chosen region. First, the user presses the mouse with the left button, selecting points in the image and places the number of points he wants until the polygon is closed on the first selected button, at which point the user clicks twice to "send" the region for analysis and redoes a second polygon with the second area for analysis, after the second sending a third window will open showing the total spectrum and the spectrum of each selected region.
+- **`plot_graphs_with_roi`**: the same previous image opens, but this time a second image opens alongside with the transmission image, in this image the user can select two regions of interest to analyze the spectrum of the chosen region. First, the user presses the mouse with the left button, selecting points in the image and places the number of points he wants until the polygon is closed on the first selected button, at which point the user clicks twice to "send" the region for analysis and redoes a second polygon with the second area for analysis, after the second sending a third window will open showing the total spectrum and the spectrum of each selected region. The function used to make the polygons and get the corresponding region is [roipoly](https://fr.mathworks.com/help/images/ref/roipoly.html).
 
   ![roi1 gif.](/Images/roi1.gif)
 
-- **`plot_similar_pixels_from_rois`**: this function shows the transmission image to the user who can select two areas of interest, exactly the same as the previous function, however, here the user can only take a part where he is sure there is substance A and then he selects only a part where it knows that substance B exists, so this function using MATLAB's correlation function will show the user the pixels where there is a similarity between their curves, this was tested and proved to be very efficient for our samples.
+- **`plot_similar_pixels_from_rois`**: this function shows the transmission image to the user who can select two areas of interest, exactly the same as the previous function, however, here the user can only take a part where he is sure there is substance A and then he selects only a part where it knows that substance B exists, so this function using MATLAB's correlation function will show the user the pixels where there is a similarity between their curves, this was tested and proved to be very efficient for our samples. The function used to make the polygons and get the corresponding region is [roipoly](https://fr.mathworks.com/help/images/ref/roipoly.html).
 
   ![roi2 gif.](/Images/roi2.gif)
 
-- **`plot_graphs_with_ifft`**: next to the time and frequency graphs the user will have three curves corresponding to the inverse fourier transform for the selected peaks. (The time axis is not yet well adjusted).
+- **`plot_graphs_with_ifft`**: next to the time and frequency graphs the user will have three curves corresponding to the [inverse fourier transform](https://fr.mathworks.com/help/matlab/ref/ifft.html) for the selected peaks. (The time axis is not yet well adjusted).
 
   ![plot graphs image.](/Images/05.svg)
 

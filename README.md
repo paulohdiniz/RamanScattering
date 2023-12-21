@@ -49,6 +49,10 @@ Outside the folders we have
   ## 2. Preprocessing
   - **2.1 Eliminating Initial Impulse**
       - After that, the script executes the `window_overlap` method which will take *tukey_window_param* and *percent_FWHM* as parameters. This function serves to remove the large value of the signal caused by the initial impulse, therefore, it will only be removed from the first folder that contains data from 0ps to ~3ps. The *percent_FWHM* value is the percentage used of the full width at half maximum value of the square of the absolute value of the raw curve integral. We found that the 100% value leaves the value of the initial impulse insignificant in relation to the oscillation produced in the studied species, however, a window showing all these curves will open to the user to ratify or change this value. The *tukey_window_param value* indicates the percentage of the [Tukey window](https://fr.mathworks.com/help/signal/ref/tukeywin.html) used to smooth this initially made cut.
+
+   ![plot graphs image.](/Images/00.png)
+The blue curve is the original data curve between 0ps and ~3ps, we see that there is a very large impulse peak at the beginning that needs to be eliminated. We take the integral of this curve, take the absolute value and square it to obtain the pink curve, from it we take the FWHM and the time where we have the maximum value, which in the image and in the code we call `time_peak`. With the FWHM value, we will start the Tukeywin window from the time_peak plus the percentage of the FWHM (`time_peak` + `percent_FWHM`). The `percent_FWHM` value is indicated by the user, but we know that close to 100% is a good value for the data. The dashed curve refers to the window and the green curve is the curve resulting from this entire process. All curves are normalized for better visualization.
+     
   - **2.2 Normalization and centralization**
     - After that, the script executes the `Tnorm_and_center_data` method that normalizes and centers the data.
   - **2.3 Stitching and interpolating**
